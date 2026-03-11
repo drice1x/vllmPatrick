@@ -1,0 +1,37 @@
+{
+  "32": {
+    "n": 0,
+    "accuracy": null,
+    "mean_entropy": null
+  },
+  "64": {
+    "n": 0,
+    "accuracy": null,
+    "mean_entropy": null
+  },
+  "128": {
+    "n": 0,
+    "accuracy": null,
+    "mean_entropy": null
+  },
+  "256": {
+    "n": 0,
+    "accuracy": null,
+    "mean_entropy": null
+  },
+  "512": {
+    "n": 0,
+    "accuracy": null,
+    "mean_entropy": null
+  },
+  "1024": {
+    "n": 0,
+    "accuracy": null,
+    "mean_entropy": null
+  },
+  "2048": {
+    "n": 0,
+    "accuracy": null,
+    "mean_entropy": null
+  }
+}

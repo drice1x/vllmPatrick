@@ -1,0 +1,4908 @@
+[
+  {
+    "question_id": "gsm8k_test_588",
+    "question": "Jared is trying to increase his typing speed. He starts with 47 words per minute (WPM). After some lessons the next time he tests his typing speed it has increased to 52 WPM. If he continues to increase his typing speed once more by 5 words, what will be the average of the three measurements?",
+    "gold_answer": "52",
+    "gold_rationale": "Jared types at 52 WPM and increases it by 5 WPM, 52 + 5 = <<52+5=57>>57 WPM.\nHis average over all his measured words-per-minute is 47 + 52 + 57 = <<47+52+57=156>>156.\nHis total is 156 / 3 typing speeds = <<156/3=52>>52 WPM as Jared's average typing speed.\n#### 52",
+    "max_tokens": 32,
+    "temperature": 0.7,
+    "response_text": "Let's break down the problem step by step to find the average typing speed after three measurements.\n\n1. **Initial Typing Speed:**\n   Jared starts with",
+    "finish_reason": "length",
+    "pred_final_number": "1",
+    "correct": false,
+    "num_generated_tokens": 32,
+    "tokens": [
+      "Let",
+      "'s",
+      " break",
+      " down",
+      " the",
+      " problem",
+      " step",
+      " by",
+      " step",
+      " to",
+      " find",
+      " the",
+      " average",
+      " typing",
+      " speed",
+      " after",
+      " three",
+      " measurements",
+      ".\n\n",
+      "1",
+      ".",
+      " **",
+      "Initial",
+      " Typ",
+      "ing",
+      " Speed",
+      ":",
+      "**\n",
+      "  ",
+      " Jared",
+      " starts",
+      " with"
+    ],
+    "token_entropy": [
+      0.4910314977169037,
+      3.139232518378776e-08,
+      0.21649609506130219,
+      0.6774938702583313,
+      0.007534362841397524,
+      0.014808788895606995,
+      0.003925391007214785,
+      0.09527191519737244,
+      1.5840200831007678e-06,
+      0.7704414129257202,
+      0.024255074560642242,
+      0.029856322333216667,
+      0.014055518433451653,
+      0.3739375174045563,
+      0.0013159092050045729,
+      0.8955042958259583,
+      1.0253666639328003,
+      0.0021860580891370773,
+      0.008790198713541031,
+      0.09986432641744614,
+      2.9432136727791658e-08,
+      0.006314851809293032,
+      0.08542574197053909,
+      0.44139280915260315,
+      7.178905914173583e-09,
+      1.7023427290041582e-06,
+      0.36823588609695435,
+      1.0708610716392286e-05,
+      1.8280227322975406e-06,
+      0.568824827671051,
+      0.16377873718738556,
+      0.029842542484402657
+    ],
+    "trajectory_length": 32,
+    "raw_response": {
+      "id": "chatcmpl-929900b56ad3033d",
+      "choices": [
+        {
+          "finish_reason": "length",
+          "index": 0,
+          "logprobs": {
+            "content": [
+              {
+                "token": "Let",
+                "bytes": [
+                  76,
+                  101,
+                  116
+                ],
+                "logprob": -0.3133785128593445,
+                "top_logprobs": [
+                  {
+                    "token": "Let",
+                    "bytes": [
+                      76,
+                      101,
+                      116
+                    ],
+                    "logprob": -0.3133785128593445,
+                    "entropy": null
+                  },
+                  {
+                    "token": "To",
+                    "bytes": [
+                      84,
+                      111
+                    ],
+                    "logprob": -1.3133785724639893,
+                    "entropy": null
+                  },
+                  {
+                    "token": "Sure",
+                    "bytes": [
+                      83,
+                      117,
+                      114,
+                      101
+                    ],
+                    "logprob": -9.68837833404541,
+                    "entropy": null
+                  },
+                  {
+                    "token": "Certainly",
+                    "bytes": [
+                      67,
+                      101,
+                      114,
+                      116,
+                      97,
+                      105,
+                      110,
+                      108,
+                      121
+                    ],
+                    "logprob": -10.56337833404541,
+                    "entropy": null
+                  },
+                  {
+                    "token": "Step",
+                    "bytes": [
+                      83,
+                      116,
+                      101,
+                      112
+                    ],
+                    "logprob": -10.68837833404541,
+                    "entropy": null
+                  }
+                ],
+                "entropy": 0.4910314977169037
+              },
+              {
+                "token": "'s",
+                "bytes": [
+                  39,
+                  115
+                ],
+                "logprob": -8.344646857949556e-07,
+                "top_logprobs": [
+                  {
+                    "token": "'s",
+                    "bytes": [
+                      39,
+                      115
+                    ],
+                    "logprob": -8.344646857949556e-07,
+                    "entropy": null
+                  },
+                  {
+                    "token": "’s",
+                    "bytes": [
+                      226,
+                      128,
+                      153,
+                      115
+                    ],
+                    "logprob": -14.250000953674316,
+                    "entropy": null
+                  },
+                  {
+                    "token": " us",
+                    "bytes": [
+                      32,
+                      117,
+                      115
+                    ],
+                    "logprob": -16.375,
+                    "entropy": null
+                  },
+                  {
+                    "token": " me",
+                    "bytes": [
+                      32,
+                      109,
+                      101
+                    ],
+                    "logprob": -17.625,
+                    "entropy": null
+                  },
+                  {
+                    "token": "'S",
+                    "bytes": [
+                      39,
+                      83
+                    ],
+                    "logprob": -18.6875,
+                    "entropy": null
+                  }
+                ],
+                "entropy": 3.139232518378776e-08
+              },
+              {
+                "token": " break",
+                "bytes": [
+                  32,
+                  98,
+                  114,
+                  101,
+                  97,
+                  107
+                ],
+                "logprob": -0.1449769288301468,
+                "top_logprobs": [
+                  {
+                    "token": " break",
+                    "bytes": [
+                      32,
+                      98,
+                      114,
+                      101,
+                      97,
+                      107
+                    ],
+                    "logprob": -0.1449769288301468,
+                    "entropy": null
+                  },
+                  {
+                    "token": " approach",
+                    "bytes": [
+                      32,
+                      97,
+                      112,
+                      112,
+                      114,
+                      111,
+                      97,
+                      99,
+                      104
+                    ],
+                    "logprob": -2.394976854324341,
+                    "entropy": null
+                  },
+                  {
+                    "token": " reason",
+                    "bytes": [
+                      32,
+                      114,
+                      101,
+                      97,
+                      115,
+                      111,
+                      110
+                    ],
+                    "logprob": -3.769976854324341,
+                    "entropy": null
+                  },
+                  {
+                    "token": " solve",
+                    "bytes": [
+                      32,
+                      115,
+                      111,
+                      108,
+                      118,
+                      101
+                    ],
+                    "logprob": -4.51997709274292,
+                    "entropy": null
+                  },
+                  {
+                    "token": " go",
+                    "bytes": [
+                      32,
+                      103,
+                      111
+                    ],
+                    "logprob": -5.76997709274292,
+                    "entropy": null
+                  }
+                ],
+                "entropy": 0.21649609506130219
+              },
+              {
+                "token": " down",
+                "bytes": [
+                  32,
+                  100,
+                  111,
+                  119,
+                  110
+                ],
+                "logprob": -0.576074481010437,
+                "top_logprobs": [
+                  {
+                    "token": " down",
+                    "bytes": [
+                      32,
+                      100,
+                      111,
+                      119,
+                      110
+                    ],
+                    "logprob": -0.576074481010437,
+                    "entropy": null
+                  },
+                  {
+                    "token": " this",
+                    "bytes": [
+                      32,
+                      116,
+                      104,
+                      105,
+                      115
+                    ],
+                    "logprob": -0.826074481010437,
+                    "entropy": null
+                  },
+                  {
+                    "token": " the",
+                    "bytes": [
+                      32,
+                      116,
+                      104,
+                      101
+                    ],
+                    "logprob": -9.451074600219727,
+                    "entropy": null
+                  },
+                  {
+                    "token": " it",
+                    "bytes": [
+                      32,
+                      105,
+                      116
+                    ],
+                    "logprob": -9.826074600219727,
+                    "entropy": null
+                  },
+                  {
+                    "token": " Down",
+                    "bytes": [
+                      32,
+                      68,
+                      111,
+                      119,
+                      110
+                    ],
+                    "logprob": -14.763574600219727,
+                    "entropy": null
+                  }
+                ],
+                "entropy": 0.6774938702583313
+              },
+              {
+                "token": " the",
+                "bytes": [
+                  32,
+                  116,
+                  104,
+                  101
+                ],
+                "logprob": -0.007673903834074736,
+                "top_logprobs": [
+                  {
+                    "token": " the",
+                    "bytes": [
+                      32,
+                      116,
+                      104,
+                      101
+                    ],
+                    "logprob": -0.007673903834074736,
+                    "entropy": null
+                  },
+                  {
+                    "token": " this",
+                    "bytes": [
+                      32,
+                      116,
+                      104,
+                      105,
+                      115
+                    ],
+                    "logprob": -4.882673740386963,
+                    "entropy": null
+                  },
+                  {
+                    "token": " Jared",
+                    "bytes": [
+                      32,
+                      74,
+                      97,
+                      114,
+                      101,
+                      100
+                    ],
+                    "logprob": -9.757674217224121,
+                    "entropy": null
+                  },
+                  {
+                    "token": " and",
+                    "bytes": [
+                      32,
+                      97,
+                      110,
+                      100
+                    ],
+                    "logprob": -11.632674217224121,
+                    "entropy": null
+                  },
+                  {
+                    "token": " each",
+                    "bytes": [
+                      32,
+                      101,
+                      97,
+                      99,
+                      104
+                    ],
+                    "logprob": -14.507674217224121,
+                    "entropy": null
+                  }
+                ],
+                "entropy": 0.007534362841397524
+              },
+              {
+                "token": " problem",
+                "bytes": [
+                  32,
+                  112,
+                  114,
+                  111,
+                  98,
+                  108,
+                  101,
+                  109
+                ],
+                "logprob": -0.01642785593867302,
+                "top_logprobs": [
+                  {
+                    "token": " problem",
+                    "bytes": [
+                      32,
+                      112,
+                      114,
+                      111,
+                      98,
+                      108,
+                      101,
+                      109
+                    ],
+                    "logprob": -0.01642785593867302,
+                    "entropy": null
+                  },
+                  {
+                    "token": " information",
+                    "bytes": [
+                      32,
+                      105,
+                      110,
+                      102,
+                      111,
+                      114,
+                      109,
+                      97,
+                      116,
+                      105,
+                      111,
+                      110
+                    ],
+                    "logprob": -4.766427993774414,
+                    "entropy": null
+                  },
+                  {
+                    "token": " steps",
+                    "bytes": [
+                      32,
+                      115,
+                      116,
+                      101,
+                      112,
+                      115
+                    ],
+                    "logprob": -5.266427993774414,
+                    "entropy": null
+                  },
+                  {
+                    "token": " process",
+                    "bytes": [
+                      32,
+                      112,
+                      114,
+                      111,
+                      99,
+                      101,
+                      115,
+                      115
+                    ],
+                    "logprob": -6.641427993774414,
+                    "entropy": null
+                  },
+                  {
+                    "token": " reasoning",
+                    "bytes": [
+                      32,
+                      114,
+                      101,
+                      97,
+                      115,
+                      111,
+                      110,
+                      105,
+                      110,
+                      103
+                    ],
+                    "logprob": -7.516427993774414,
+                    "entropy": null
+                  }
+                ],
+                "entropy": 0.014808788895606995
+              },
+              {
+                "token": " step",
+                "bytes": [
+                  32,
+                  115,
+                  116,
+                  101,
+                  112
+                ],
+                "logprob": -0.004988841712474823,
+                "top_logprobs": [
+                  {
+                    "token": " step",
+                    "bytes": [
+                      32,
+                      115,
+                      116,
+                      101,
+                      112
+                    ],
+                    "logprob": -0.004988841712474823,
+                    "entropy": null
+                  },
+                  {
+                    "token": " into",
+                    "bytes": [
+                      32,
+                      105,
+                      110,
+                      116,
+                      111
+                    ],
+                    "logprob": -5.504988670349121,
+                    "entropy": null
+                  },
+                  {
+                    "token": " and",
+                    "bytes": [
+                      32,
+                      97,
+                      110,
+                      100
+                    ],
+                    "logprob": -7.004988670349121,
+                    "entropy": null
+                  },
+                  {
+                    "token": " to",
+                    "bytes": [
+                      32,
+                      116,
+                      111
+                    ],
+                    "logprob": -14.004988670349121,
+                    "entropy": null
+                  },
+                  {
+                    "token": ":\n\n",
+                    "bytes": [
+                      58,
+                      10,
+                      10
+                    ],
+                    "logprob": -14.879988670349121,
+                    "entropy": null
+                  }
+                ],
+                "entropy": 0.003925391007214785
+              },
+              {
+                "token": " by",
+                "bytes": [
+                  32,
+                  98,
+                  121
+                ],
+                "logprob": -0.061969853937625885,
+                "top_logprobs": [
+                  {
+                    "token": " by",
+                    "bytes": [
+                      32,
+                      98,
+                      121
+                    ],
+                    "logprob": -0.061969853937625885,
+                    "entropy": null
+                  },
+                  {
+                    "token": "-by",
+                    "bytes": [
+                      45,
+                      98,
+                      121
+                    ],
+                    "logprob": -2.811969757080078,
+                    "entropy": null
+                  },
+                  {
+                    "token": "_by",
+                    "bytes": [
+                      95,
+                      98,
+                      121
+                    ],
+                    "logprob": -14.436969757080078,
+                    "entropy": null
+                  },
+                  {
+                    "token": "by",
+                    "bytes": [
+                      98,
+                      121
+                    ],
+                    "logprob": -14.811969757080078,
+                    "entropy": null
+                  },
+                  {
+                    "token": " By",
+                    "bytes": [
+                      32,
+                      66,
+                      121
+                    ],
+                    "logprob": -15.436969757080078,
+                    "entropy": null
+                  }
+                ],
+                "entropy": 0.09527191519737244
+              },
+              {
+                "token": " step",
+                "bytes": [
+                  32,
+                  115,
+                  116,
+                  101,
+                  112
+                ],
+                "logprob": -1.2636104656849056e-05,
+                "top_logprobs": [
+                  {
+                    "token": " step",
+                    "bytes": [
+                      32,
+                      115,
+                      116,
+                      101,
+                      112
+                    ],
+                    "logprob": -1.2636104656849056e-05,
+                    "entropy": null
+                  },
+                  {
+                    "token": "-step",
+                    "bytes": [
+                      45,
+                      115,
+                      116,
+                      101,
+                      112
+                    ],
+                    "logprob": -11.375012397766113,
+                    "entropy": null
+                  },
+                  {
+                    "token": "step",
+                    "bytes": [
+                      115,
+                      116,
+                      101,
+                      112
+                    ],
+                    "logprob": -14.375012397766113,
+                    "entropy": null
+                  },
+                  {
+                    "token": ".step",
+                    "bytes": [
+                      46,
+                      115,
+                      116,
+                      101,
+                      112
+                    ],
+                    "logprob": -15.250012397766113,
+                    "entropy": null
+                  },
+                  {
+                    "token": "(step",
+                    "bytes": [
+                      40,
+                      115,
+                      116,
+                      101,
+                      112
+                    ],
+                    "logprob": -15.625012397766113,
+                    "entropy": null
+                  }
+                ],
+                "entropy": 1.5840200831007678e-06
+              },
+              {
+                "token": " to",
+                "bytes": [
+                  32,
+                  116,
+                  111
+                ],
+                "logprob": -1.9835127592086792,
+                "top_logprobs": [
+                  {
+                    "token": " to",
+                    "bytes": [
+                      32,
+                      116,
+                      111
+                    ],
+                    "logprob": -1.9835127592086792,
+                    "entropy": null
+                  },
+                  {
+                    "token": ":\n\n",
+                    "bytes": [
+                      58,
+                      10,
+                      10
+                    ],
+                    "logprob": -0.4835127294063568,
+                    "entropy": null
+                  },
+                  {
+                    "token": ".\n\n",
+                    "bytes": [
+                      46,
+                      10,
+                      10
+                    ],
+                    "logprob": -1.4835127592086792,
+                    "entropy": null
+                  },
+                  {
+                    "token": " and",
+                    "bytes": [
+                      32,
+                      97,
+                      110,
+                      100
+                    ],
+                    "logprob": -3.9835126399993896,
+                    "entropy": null
+                  },
+                  {
+                    "token": " before",
+                    "bytes": [
+                      32,
+                      98,
+                      101,
+                      102,
+                      111,
+                      114,
+                      101
+                    ],
+                    "logprob": -8.608512878417969,
+                    "entropy": null
+                  }
+                ],
+                "entropy": 0.7704414129257202
+              },
+              {
+                "token": " find",
+                "bytes": [
+                  32,
+                  102,
+                  105,
+                  110,
+                  100
+                ],
+                "logprob": -0.02176051400601864,
+                "top_logprobs": [
+                  {
+                    "token": " find",
+                    "bytes": [
+                      32,
+                      102,
+                      105,
+                      110,
+                      100
+                    ],
+                    "logprob": -0.02176051400601864,
+                    "entropy": null
+                  },
+                  {
+                    "token": " determine",
+                    "bytes": [
+                      32,
+                      100,
+                      101,
+                      116,
+                      101,
+                      114,
+                      109,
+                      105,
+                      110,
+                      101
+                    ],
+                    "logprob": -4.0217604637146,
+                    "entropy": null
+                  },
+                  {
+                    "token": " calculate",
+                    "bytes": [
+                      32,
+                      99,
+                      97,
+                      108,
+                      99,
+                      117,
+                      108,
+                      97,
+                      116,
+                      101
+                    ],
+                    "logprob": -6.3967604637146,
+                    "entropy": null
+                  },
+                  {
+                    "token": " solve",
+                    "bytes": [
+                      32,
+                      115,
+                      111,
+                      108,
+                      118,
+                      101
+                    ],
+                    "logprob": -6.6467604637146,
+                    "entropy": null
+                  },
+                  {
+                    "token": " ensure",
+                    "bytes": [
+                      32,
+                      101,
+                      110,
+                      115,
+                      117,
+                      114,
+                      101
+                    ],
+                    "logprob": -7.6467604637146,
+                    "entropy": null
+                  }
+                ],
+                "entropy": 0.024255074560642242
+              },
+              {
+                "token": " the",
+                "bytes": [
+                  32,
+                  116,
+                  104,
+                  101
+                ],
+                "logprob": -0.02332068420946598,
+                "top_logprobs": [
+                  {
+                    "token": " the",
+                    "bytes": [
+                      32,
+                      116,
+                      104,
+                      101
+                    ],
+                    "logprob": -0.02332068420946598,
+                    "entropy": null
+                  },
+                  {
+                    "token": " Jared",
+                    "bytes": [
+                      32,
+                      74,
+                      97,
+                      114,
+                      101,
+                      100
+                    ],
+                    "logprob": -3.7733206748962402,
+                    "entropy": null
+                  },
+                  {
+                    "token": " out",
+                    "bytes": [
+                      32,
+                      111,
+                      117,
+                      116
+                    ],
+                    "logprob": -9.648321151733398,
+                    "entropy": null
+                  },
+                  {
+                    "token": " an",
+                    "bytes": [
+                      32,
+                      97,
+                      110
+                    ],
+                    "logprob": -13.023321151733398,
+                    "entropy": null
+                  },
+                  {
+                    "token": " Jensen",
+                    "bytes": [
+                      32,
+                      74,
+                      101,
+                      110,
+                      115,
+                      101,
+                      110
+                    ],
+                    "logprob": -13.585821151733398,
+                    "entropy": null
+                  }
+                ],
+                "entropy": 0.029856322333216667
+              },
+              {
+                "token": " average",
+                "bytes": [
+                  32,
+                  97,
+                  118,
+                  101,
+                  114,
+                  97,
+                  103,
+                  101
+                ],
+                "logprob": -0.012819146737456322,
+                "top_logprobs": [
+                  {
+                    "token": " average",
+                    "bytes": [
+                      32,
+                      97,
+                      118,
+                      101,
+                      114,
+                      97,
+                      103,
+                      101
+                    ],
+                    "logprob": -0.012819146737456322,
+                    "entropy": null
+                  },
+                  {
+                    "token": " final",
+                    "bytes": [
+                      32,
+                      102,
+                      105,
+                      110,
+                      97,
+                      108
+                    ],
+                    "logprob": -4.387819290161133,
+                    "entropy": null
+                  },
+                  {
+                    "token": " answer",
+                    "bytes": [
+                      32,
+                      97,
+                      110,
+                      115,
+                      119,
+                      101,
+                      114
+                    ],
+                    "logprob": -8.887819290161133,
+                    "entropy": null
+                  },
+                  {
+                    "token": " solution",
+                    "bytes": [
+                      32,
+                      115,
+                      111,
+                      108,
+                      117,
+                      116,
+                      105,
+                      111,
+                      110
+                    ],
+                    "logprob": -9.012819290161133,
+                    "entropy": null
+                  },
+                  {
+                    "token": " required",
+                    "bytes": [
+                      32,
+                      114,
+                      101,
+                      113,
+                      117,
+                      105,
+                      114,
+                      101,
+                      100
+                    ],
+                    "logprob": -10.637819290161133,
+                    "entropy": null
+                  }
+                ],
+                "entropy": 0.014055518433451653
+              },
+              {
+                "token": " typing",
+                "bytes": [
+                  32,
+                  116,
+                  121,
+                  112,
+                  105,
+                  110,
+                  103
+                ],
+                "logprob": -1.602412462234497,
+                "top_logprobs": [
+                  {
+                    "token": " typing",
+                    "bytes": [
+                      32,
+                      116,
+                      121,
+                      112,
+                      105,
+                      110,
+                      103
+                    ],
+                    "logprob": -1.602412462234497,
+                    "entropy": null
+                  },
+                  {
+                    "token": " of",
+                    "bytes": [
+                      32,
+                      111,
+                      102
+                    ],
+                    "logprob": -0.22741252183914185,
+                    "entropy": null
+                  },
+                  {
+                    "token": " W",
+                    "bytes": [
+                      32,
+                      87
+                    ],
+                    "logprob": -6.727412700653076,
+                    "entropy": null
+                  },
+                  {
+                    "token": ".\n\n",
+                    "bytes": [
+                      46,
+                      10,
+                      10
+                    ],
+                    "logprob": -8.477412223815918,
+                    "entropy": null
+                  },
+                  {
+                    "token": " increase",
+                    "bytes": [
+                      32,
+                      105,
+                      110,
+                      99,
+                      114,
+                      101,
+                      97,
+                      115,
+                      101
+                    ],
+                    "logprob": -8.602412223815918,
+                    "entropy": null
+                  }
+                ],
+                "entropy": 0.3739375174045563
+              },
+              {
+                "token": " speed",
+                "bytes": [
+                  32,
+                  115,
+                  112,
+                  101,
+                  101,
+                  100
+                ],
+                "logprob": -0.0019298041006550193,
+                "top_logprobs": [
+                  {
+                    "token": " speed",
+                    "bytes": [
+                      32,
+                      115,
+                      112,
+                      101,
+                      101,
+                      100
+                    ],
+                    "logprob": -0.0019298041006550193,
+                    "entropy": null
+                  },
+                  {
+                    "token": " speeds",
+                    "bytes": [
+                      32,
+                      115,
+                      112,
+                      101,
+                      101,
+                      100,
+                      115
+                    ],
+                    "logprob": -6.251929759979248,
+                    "entropy": null
+                  },
+                  {
+                    "token": "速度",
+                    "bytes": [
+                      233,
+                      128,
+                      159,
+                      229,
+                      186,
+                      166
+                    ],
+                    "logprob": -13.876930236816406,
+                    "entropy": null
+                  },
+                  {
+                    "token": " rate",
+                    "bytes": [
+                      32,
+                      114,
+                      97,
+                      116,
+                      101
+                    ],
+                    "logprob": -15.126930236816406,
+                    "entropy": null
+                  },
+                  {
+                    "token": " pace",
+                    "bytes": [
+                      32,
+                      112,
+                      97,
+                      99,
+                      101
+                    ],
+                    "logprob": -17.626930236816406,
+                    "entropy": null
+                  }
+                ],
+                "entropy": 0.0013159092050045729
+              },
+              {
+                "token": " after",
+                "bytes": [
+                  32,
+                  97,
+                  102,
+                  116,
+                  101,
+                  114
+                ],
+                "logprob": -0.5972816944122314,
+                "top_logprobs": [
+                  {
+                    "token": " after",
+                    "bytes": [
+                      32,
+                      97,
+                      102,
+                      116,
+                      101,
+                      114
+                    ],
+                    "logprob": -0.5972816944122314,
+                    "entropy": null
+                  },
+                  {
+                    "token": ".\n\n",
+                    "bytes": [
+                      46,
+                      10,
+                      10
+                    ],
+                    "logprob": -1.3472816944122314,
+                    "entropy": null
+                  },
+                  {
+                    "token": " of",
+                    "bytes": [
+                      32,
+                      111,
+                      102
+                    ],
+                    "logprob": -1.9722816944122314,
+                    "entropy": null
+                  },
+                  {
+                    "token": " for",
+                    "bytes": [
+                      32,
+                      102,
+                      111,
+                      114
+                    ],
+                    "logprob": -3.9722816944122314,
+                    "entropy": null
+                  },
+                  {
+                    "token": " based",
+                    "bytes": [
+                      32,
+                      98,
+                      97,
+                      115,
+                      101,
+                      100
+                    ],
+                    "logprob": -4.347281455993652,
+                    "entropy": null
+                  }
+                ],
+                "entropy": 0.8955042958259583
+              },
+              {
+                "token": " three",
+                "bytes": [
+                  32,
+                  116,
+                  104,
+                  114,
+                  101,
+                  101
+                ],
+                "logprob": -0.7894935607910156,
+                "top_logprobs": [
+                  {
+                    "token": " three",
+                    "bytes": [
+                      32,
+                      116,
+                      104,
+                      114,
+                      101,
+                      101
+                    ],
+                    "logprob": -0.7894935607910156,
+                    "entropy": null
+                  },
+                  {
+                    "token": " the",
+                    "bytes": [
+                      32,
+                      116,
+                      104,
+                      101
+                    ],
+                    "logprob": -1.0394935607910156,
+                    "entropy": null
+                  },
+                  {
+                    "token": " Jared",
+                    "bytes": [
+                      32,
+                      74,
+                      97,
+                      114,
+                      101,
+                      100
+                    ],
+                    "logprob": -2.1644935607910156,
+                    "entropy": null
+                  },
+                  {
+                    "token": " all",
+                    "bytes": [
+                      32,
+                      97,
+                      108,
+                      108
+                    ],
+                    "logprob": -2.6644935607910156,
+                    "entropy": null
+                  },
+                  {
+                    "token": " each",
+                    "bytes": [
+                      32,
+                      101,
+                      97,
+                      99,
+                      104
+                    ],
+                    "logprob": -5.414493560791016,
+                    "entropy": null
+                  }
+                ],
+                "entropy": 1.0253666639328003
+              },
+              {
+                "token": " measurements",
+                "bytes": [
+                  32,
+                  109,
+                  101,
+                  97,
+                  115,
+                  117,
+                  114,
+                  101,
+                  109,
+                  101,
+                  110,
+                  116,
+                  115
+                ],
+                "logprob": -0.003789032343775034,
+                "top_logprobs": [
+                  {
+                    "token": " measurements",
+                    "bytes": [
+                      32,
+                      109,
+                      101,
+                      97,
+                      115,
+                      117,
+                      114,
+                      101,
+                      109,
+                      101,
+                      110,
+                      116,
+                      115
+                    ],
+                    "logprob": -0.003789032343775034,
+                    "entropy": null
+                  },
+                  {
+                    "token": " tests",
+                    "bytes": [
+                      32,
+                      116,
+                      101,
+                      115,
+                      116,
+                      115
+                    ],
+                    "logprob": -6.128788948059082,
+                    "entropy": null
+                  },
+                  {
+                    "token": " increases",
+                    "bytes": [
+                      32,
+                      105,
+                      110,
+                      99,
+                      114,
+                      101,
+                      97,
+                      115,
+                      101,
+                      115
+                    ],
+                    "logprob": -7.253788948059082,
+                    "entropy": null
+                  },
+                  {
+                    "token": " measurement",
+                    "bytes": [
+                      32,
+                      109,
+                      101,
+                      97,
+                      115,
+                      117,
+                      114,
+                      101,
+                      109,
+                      101,
+                      110,
+                      116
+                    ],
+                    "logprob": -8.128788948059082,
+                    "entropy": null
+                  },
+                  {
+                    "token": " measures",
+                    "bytes": [
+                      32,
+                      109,
+                      101,
+                      97,
+                      115,
+                      117,
+                      114,
+                      101,
+                      115
+                    ],
+                    "logprob": -8.253788948059082,
+                    "entropy": null
+                  }
+                ],
+                "entropy": 0.0021860580891370773
+              },
+              {
+                "token": ".\n\n",
+                "bytes": [
+                  46,
+                  10,
+                  10
+                ],
+                "logprob": -0.00864465907216072,
+                "top_logprobs": [
+                  {
+                    "token": ".\n\n",
+                    "bytes": [
+                      46,
+                      10,
+                      10
+                    ],
+                    "logprob": -0.00864465907216072,
+                    "entropy": null
+                  },
+                  {
+                    "token": ":\n\n",
+                    "bytes": [
+                      58,
+                      10,
+                      10
+                    ],
+                    "logprob": -4.7586445808410645,
+                    "entropy": null
+                  },
+                  {
+                    "token": " of",
+                    "bytes": [
+                      32,
+                      111,
+                      102
+                    ],
+                    "logprob": -11.633645057678223,
+                    "entropy": null
+                  },
+                  {
+                    "token": ",",
+                    "bytes": [
+                      44
+                    ],
+                    "logprob": -11.633645057678223,
+                    "entropy": null
+                  },
+                  {
+                    "token": ".\n",
+                    "bytes": [
+                      46,
+                      10
+                    ],
+                    "logprob": -12.008645057678223,
+                    "entropy": null
+                  }
+                ],
+                "entropy": 0.008790198713541031
+              },
+              {
+                "token": "1",
+                "bytes": [
+                  49
+                ],
+                "logprob": -0.06749769300222397,
+                "top_logprobs": [
+                  {
+                    "token": "1",
+                    "bytes": [
+                      49
+                    ],
+                    "logprob": -0.06749769300222397,
+                    "entropy": null
+                  },
+                  {
+                    "token": "###",
+                    "bytes": [
+                      35,
+                      35,
+                      35
+                    ],
+                    "logprob": -2.817497730255127,
+                    "entropy": null
+                  },
+                  {
+                    "token": "**",
+                    "bytes": [
+                      42,
+                      42
+                    ],
+                    "logprob": -5.442497730255127,
+                    "entropy": null
+                  },
+                  {
+                    "token": "Step",
+                    "bytes": [
+                      83,
+                      116,
+                      101,
+                      112
+                    ],
+                    "logprob": -6.817497730255127,
+                    "entropy": null
+                  },
+                  {
+                    "token": "First",
+                    "bytes": [
+                      70,
+                      105,
+                      114,
+                      115,
+                      116
+                    ],
+                    "logprob": -9.692497253417969,
+                    "entropy": null
+                  }
+                ],
+                "entropy": 0.09986432641744614
+              },
+              {
+                "token": ".",
+                "bytes": [
+                  46
+                ],
+                "logprob": -5.960462772236497e-07,
+                "top_logprobs": [
+                  {
+                    "token": ".",
+                    "bytes": [
+                      46
+                    ],
+                    "logprob": -5.960462772236497e-07,
+                    "entropy": null
+                  },
+                  {
+                    "token": ")",
+                    "bytes": [
+                      41
+                    ],
+                    "logprob": -14.250000953674316,
+                    "entropy": null
+                  },
+                  {
+                    "token": ".)",
+                    "bytes": [
+                      46,
+                      41
+                    ],
+                    "logprob": -19.375,
+                    "entropy": null
+                  },
+                  {
+                    "token": ",",
+                    "bytes": [
+                      44
+                    ],
+                    "logprob": -20.125,
+                    "entropy": null
+                  },
+                  {
+                    "token": "st",
+                    "bytes": [
+                      115,
+                      116
+                    ],
+                    "logprob": -20.3125,
+                    "entropy": null
+                  }
+                ],
+                "entropy": 2.9432136727791658e-08
+              },
+              {
+                "token": " **",
+                "bytes": [
+                  32,
+                  42,
+                  42
+                ],
+                "logprob": -0.008803720586001873,
+                "top_logprobs": [
+                  {
+                    "token": " **",
+                    "bytes": [
+                      32,
+                      42,
+                      42
+                    ],
+                    "logprob": -0.008803720586001873,
+                    "entropy": null
+                  },
+                  {
+                    "token": " Jared",
+                    "bytes": [
+                      32,
+                      74,
+                      97,
+                      114,
+                      101,
+                      100
+                    ],
+                    "logprob": -5.633803844451904,
+                    "entropy": null
+                  },
+                  {
+                    "token": " Initial",
+                    "bytes": [
+                      32,
+                      73,
+                      110,
+                      105,
+                      116,
+                      105,
+                      97,
+                      108
+                    ],
+                    "logprob": -5.883803844451904,
+                    "entropy": null
+                  },
+                  {
+                    "token": " First",
+                    "bytes": [
+                      32,
+                      70,
+                      105,
+                      114,
+                      115,
+                      116
+                    ],
+                    "logprob": -6.633803844451904,
+                    "entropy": null
+                  },
+                  {
+                    "token": " The",
+                    "bytes": [
+                      32,
+                      84,
+                      104,
+                      101
+                    ],
+                    "logprob": -7.508803844451904,
+                    "entropy": null
+                  }
+                ],
+                "entropy": 0.006314851809293032
+              },
+              {
+                "token": "Initial",
+                "bytes": [
+                  73,
+                  110,
+                  105,
+                  116,
+                  105,
+                  97,
+                  108
+                ],
+                "logprob": -0.058924853801727295,
+                "top_logprobs": [
+                  {
+                    "token": "Initial",
+                    "bytes": [
+                      73,
+                      110,
+                      105,
+                      116,
+                      105,
+                      97,
+                      108
+                    ],
+                    "logprob": -0.058924853801727295,
+                    "entropy": null
+                  },
+                  {
+                    "token": "First",
+                    "bytes": [
+                      70,
+                      105,
+                      114,
+                      115,
+                      116
+                    ],
+                    "logprob": -2.933924913406372,
+                    "entropy": null
+                  },
+                  {
+                    "token": "Starting",
+                    "bytes": [
+                      83,
+                      116,
+                      97,
+                      114,
+                      116,
+                      105,
+                      110,
+                      103
+                    ],
+                    "logprob": -6.058924674987793,
+                    "entropy": null
+                  },
+                  {
+                    "token": "Ident",
+                    "bytes": [
+                      73,
+                      100,
+                      101,
+                      110,
+                      116
+                    ],
+                    "logprob": -6.808924674987793,
+                    "entropy": null
+                  },
+                  {
+                    "token": "Original",
+                    "bytes": [
+                      79,
+                      114,
+                      105,
+                      103,
+                      105,
+                      110,
+                      97,
+                      108
+                    ],
+                    "logprob": -8.433924674987793,
+                    "entropy": null
+                  }
+                ],
+                "entropy": 0.08542574197053909
+              },
+              {
+                "token": " Typ",
+                "bytes": [
+                  32,
+                  84,
+                  121,
+                  112
+                ],
+                "logprob": -0.27171897888183594,
+                "top_logprobs": [
+                  {
+                    "token": " Typ",
+                    "bytes": [
+                      32,
+                      84,
+                      121,
+                      112
+                    ],
+                    "logprob": -0.27171897888183594,
+                    "entropy": null
+                  },
+                  {
+                    "token": " typing",
+                    "bytes": [
+                      32,
+                      116,
+                      121,
+                      112,
+                      105,
+                      110,
+                      103
+                    ],
+                    "logprob": -1.896718978881836,
+                    "entropy": null
+                  },
+                  {
+                    "token": " Speed",
+                    "bytes": [
+                      32,
+                      83,
+                      112,
+                      101,
+                      101,
+                      100
+                    ],
+                    "logprob": -2.896718978881836,
+                    "entropy": null
+                  },
+                  {
+                    "token": " Measurement",
+                    "bytes": [
+                      32,
+                      77,
+                      101,
+                      97,
+                      115,
+                      117,
+                      114,
+                      101,
+                      109,
+                      101,
+                      110,
+                      116
+                    ],
+                    "logprob": -3.646718978881836,
+                    "entropy": null
+                  },
+                  {
+                    "token": " measurement",
+                    "bytes": [
+                      32,
+                      109,
+                      101,
+                      97,
+                      115,
+                      117,
+                      114,
+                      101,
+                      109,
+                      101,
+                      110,
+                      116
+                    ],
+                    "logprob": -5.771718978881836,
+                    "entropy": null
+                  }
+                ],
+                "entropy": 0.44139280915260315
+              },
+              {
+                "token": "ing",
+                "bytes": [
+                  105,
+                  110,
+                  103
+                ],
+                "logprob": -3.576278118089249e-07,
+                "top_logprobs": [
+                  {
+                    "token": "ing",
+                    "bytes": [
+                      105,
+                      110,
+                      103
+                    ],
+                    "logprob": -3.576278118089249e-07,
+                    "entropy": null
+                  },
+                  {
+                    "token": "ew",
+                    "bytes": [
+                      101,
+                      119
+                    ],
+                    "logprob": -15.5,
+                    "entropy": null
+                  },
+                  {
+                    "token": "ingt",
+                    "bytes": [
+                      105,
+                      110,
+                      103,
+                      116
+                    ],
+                    "logprob": -16.75,
+                    "entropy": null
+                  },
+                  {
+                    "token": "ist",
+                    "bytes": [
+                      105,
+                      115,
+                      116
+                    ],
+                    "logprob": -17.375,
+                    "entropy": null
+                  },
+                  {
+                    "token": "o",
+                    "bytes": [
+                      111
+                    ],
+                    "logprob": -17.875,
+                    "entropy": null
+                  }
+                ],
+                "entropy": 7.178905914173583e-09
+              },
+              {
+                "token": " Speed",
+                "bytes": [
+                  32,
+                  83,
+                  112,
+                  101,
+                  101,
+                  100
+                ],
+                "logprob": -1.4662635294371285e-05,
+                "top_logprobs": [
+                  {
+                    "token": " Speed",
+                    "bytes": [
+                      32,
+                      83,
+                      112,
+                      101,
+                      101,
+                      100
+                    ],
+                    "logprob": -1.4662635294371285e-05,
+                    "entropy": null
+                  },
+                  {
+                    "token": " speed",
+                    "bytes": [
+                      32,
+                      115,
+                      112,
+                      101,
+                      101,
+                      100
+                    ],
+                    "logprob": -11.375014305114746,
+                    "entropy": null
+                  },
+                  {
+                    "token": "Speed",
+                    "bytes": [
+                      83,
+                      112,
+                      101,
+                      101,
+                      100
+                    ],
+                    "logprob": -13.375014305114746,
+                    "entropy": null
+                  },
+                  {
+                    "token": "_speed",
+                    "bytes": [
+                      95,
+                      115,
+                      112,
+                      101,
+                      101,
+                      100
+                    ],
+                    "logprob": -14.250014305114746,
+                    "entropy": null
+                  },
+                  {
+                    "token": "速",
+                    "bytes": [
+                      233,
+                      128,
+                      159
+                    ],
+                    "logprob": -14.375014305114746,
+                    "entropy": null
+                  }
+                ],
+                "entropy": 1.7023427290041582e-06
+              },
+              {
+                "token": ":",
+                "bytes": [
+                  58
+                ],
+                "logprob": -0.22935011982917786,
+                "top_logprobs": [
+                  {
+                    "token": ":",
+                    "bytes": [
+                      58
+                    ],
+                    "logprob": -0.22935011982917786,
+                    "entropy": null
+                  },
+                  {
+                    "token": "**:",
+                    "bytes": [
+                      42,
+                      42,
+                      58
+                    ],
+                    "logprob": -1.8543500900268555,
+                    "entropy": null
+                  },
+                  {
+                    "token": "**",
+                    "bytes": [
+                      42,
+                      42
+                    ],
+                    "logprob": -3.4793500900268555,
+                    "entropy": null
+                  },
+                  {
+                    "token": ":**",
+                    "bytes": [
+                      58,
+                      42,
+                      42
+                    ],
+                    "logprob": -4.7293500900268555,
+                    "entropy": null
+                  },
+                  {
+                    "token": " (",
+                    "bytes": [
+                      32,
+                      40
+                    ],
+                    "logprob": -4.8543500900268555,
+                    "entropy": null
+                  }
+                ],
+                "entropy": 0.36823588609695435
+              },
+              {
+                "token": "**\n",
+                "bytes": [
+                  42,
+                  42,
+                  10
+                ],
+                "logprob": -5.9960475482512265e-05,
+                "top_logprobs": [
+                  {
+                    "token": "**\n",
+                    "bytes": [
+                      42,
+                      42,
+                      10
+                    ],
+                    "logprob": -5.9960475482512265e-05,
+                    "entropy": null
+                  },
+                  {
+                    "token": "**\n\n",
+                    "bytes": [
+                      42,
+                      42,
+                      10,
+                      10
+                    ],
+                    "logprob": -10.125060081481934,
+                    "entropy": null
+                  },
+                  {
+                    "token": " ",
+                    "bytes": [
+                      32
+                    ],
+                    "logprob": -11.000060081481934,
+                    "entropy": null
+                  },
+                  {
+                    "token": "**",
+                    "bytes": [
+                      42,
+                      42
+                    ],
+                    "logprob": -13.000060081481934,
+                    "entropy": null
+                  },
+                  {
+                    "token": " **",
+                    "bytes": [
+                      32,
+                      42,
+                      42
+                    ],
+                    "logprob": -14.125060081481934,
+                    "entropy": null
+                  }
+                ],
+                "entropy": 1.0708610716392286e-05
+              },
+              {
+                "token": "  ",
+                "bytes": [
+                  32,
+                  32
+                ],
+                "logprob": -1.3708974620385561e-05,
+                "top_logprobs": [
+                  {
+                    "token": "  ",
+                    "bytes": [
+                      32,
+                      32
+                    ],
+                    "logprob": -1.3708974620385561e-05,
+                    "entropy": null
+                  },
+                  {
+                    "token": "   ",
+                    "bytes": [
+                      32,
+                      32,
+                      32
+                    ],
+                    "logprob": -11.25001335144043,
+                    "entropy": null
+                  },
+                  {
+                    "token": "   \n",
+                    "bytes": [
+                      32,
+                      32,
+                      32,
+                      10
+                    ],
+                    "logprob": -14.62501335144043,
+                    "entropy": null
+                  },
+                  {
+                    "token": "\\[",
+                    "bytes": [
+                      92,
+                      91
+                    ],
+                    "logprob": -15.62501335144043,
+                    "entropy": null
+                  },
+                  {
+                    "token": "J",
+                    "bytes": [
+                      74
+                    ],
+                    "logprob": -16.00001335144043,
+                    "entropy": null
+                  }
+                ],
+                "entropy": 1.8280227322975406e-06
+              },
+              {
+                "token": " Jared",
+                "bytes": [
+                  32,
+                  74,
+                  97,
+                  114,
+                  101,
+                  100
+                ],
+                "logprob": -1.1384227275848389,
+                "top_logprobs": [
+                  {
+                    "token": " Jared",
+                    "bytes": [
+                      32,
+                      74,
+                      97,
+                      114,
+                      101,
+                      100
+                    ],
+                    "logprob": -1.1384227275848389,
+                    "entropy": null
+                  },
+                  {
+                    "token": " -",
+                    "bytes": [
+                      32,
+                      45
+                    ],
+                    "logprob": -0.38842278718948364,
+                    "entropy": null
+                  },
+                  {
+                    "token": " \\",
+                    "bytes": [
+                      32,
+                      92
+                    ],
+                    "logprob": -6.763422966003418,
+                    "entropy": null
+                  },
+                  {
+                    "token": " \\(",
+                    "bytes": [
+                      32,
+                      92,
+                      40
+                    ],
+                    "logprob": -8.888422966003418,
+                    "entropy": null
+                  },
+                  {
+                    "token": " The",
+                    "bytes": [
+                      32,
+                      84,
+                      104,
+                      101
+                    ],
+                    "logprob": -9.013422966003418,
+                    "entropy": null
+                  }
+                ],
+                "entropy": 0.568824827671051
+              },
+              {
+                "token": " starts",
+                "bytes": [
+                  32,
+                  115,
+                  116,
+                  97,
+                  114,
+                  116,
+                  115
+                ],
+                "logprob": -0.1007876843214035,
+                "top_logprobs": [
+                  {
+                    "token": " starts",
+                    "bytes": [
+                      32,
+                      115,
+                      116,
+                      97,
+                      114,
+                      116,
+                      115
+                    ],
+                    "logprob": -0.1007876843214035,
+                    "entropy": null
+                  },
+                  {
+                    "token": "'s",
+                    "bytes": [
+                      39,
+                      115
+                    ],
+                    "logprob": -2.35078763961792,
+                    "entropy": null
+                  },
+                  {
+                    "token": " started",
+                    "bytes": [
+                      32,
+                      115,
+                      116,
+                      97,
+                      114,
+                      116,
+                      101,
+                      100
+                    ],
+                    "logprob": -8.225788116455078,
+                    "entropy": null
+                  },
+                  {
+                    "token": " initially",
+                    "bytes": [
+                      32,
+                      105,
+                      110,
+                      105,
+                      116,
+                      105,
+                      97,
+                      108,
+                      108,
+                      121
+                    ],
+                    "logprob": -8.725788116455078,
+                    "entropy": null
+                  },
+                  {
+                    "token": " begins",
+                    "bytes": [
+                      32,
+                      98,
+                      101,
+                      103,
+                      105,
+                      110,
+                      115
+                    ],
+                    "logprob": -9.100788116455078,
+                    "entropy": null
+                  }
+                ],
+                "entropy": 0.16377873718738556
+              },
+              {
+                "token": " with",
+                "bytes": [
+                  32,
+                  119,
+                  105,
+                  116,
+                  104
+                ],
+                "logprob": -0.023265596479177475,
+                "top_logprobs": [
+                  {
+                    "token": " with",
+                    "bytes": [
+                      32,
+                      119,
+                      105,
+                      116,
+                      104
+                    ],
+                    "logprob": -0.023265596479177475,
+                    "entropy": null
+                  },
+                  {
+                    "token": " at",
+                    "bytes": [
+                      32,
+                      97,
+                      116
+                    ],
+                    "logprob": -3.7732656002044678,
+                    "entropy": null
+                  },
+                  {
+                    "token": " by",
+                    "bytes": [
+                      32,
+                      98,
+                      121
+                    ],
+                    "logprob": -11.523265838623047,
+                    "entropy": null
+                  },
+                  {
+                    "token": " off",
+                    "bytes": [
+                      32,
+                      111,
+                      102,
+                      102
+                    ],
+                    "logprob": -11.773265838623047,
+                    "entropy": null
+                  },
+                  {
+                    "token": " out",
+                    "bytes": [
+                      32,
+                      111,
+                      117,
+                      116
+                    ],
+                    "logprob": -13.648265838623047,
+                    "entropy": null
+                  }
+                ],
+                "entropy": 0.029842542484402657
+              }
+            ],
+            "refusal": null
+          },
+          "message": {
+            "content": "Let's break down the problem step by step to find the average typing speed after three measurements.\n\n1. **Initial Typing Speed:**\n   Jared starts with",
+            "refusal": null,
+            "role": "assistant",
+            "annotations": null,
+            "audio": null,
+            "function_call": null,
+            "tool_calls": [],
+            "reasoning": null
+          },
+          "stop_reason": null,
+          "token_ids": null
+        }
+      ],
+      "created": 1773234423,
+      "model": "qwen25-7b-reasoning",
+      "object": "chat.completion",
+      "service_tier": null,
+      "system_fingerprint": null,
+      "usage": {
+        "completion_tokens": 32,
+        "prompt_tokens": 101,
+        "total_tokens": 133,
+        "completion_tokens_details": null,
+        "prompt_tokens_details": null
+      },
+      "prompt_logprobs": null,
+      "prompt_token_ids": null,
+      "kv_transfer_params": null
+    },
+    "entropy_mean": 0.20049895331848316,
+    "entropy_max": 1.0253666639328003,
+    "entropy_min": 7.178905914173583e-09,
+    "entropy_last10_mean": 0.16575147907180193,
+    "entropy_tail_mean": 0.14133702994935965
+  },
+  {
+    "question_id": "gsm8k_test_1214",
+    "question": "Jordan has 2 children who wear diapers.  Each child requires 5 diaper changes per day.  Jordan's wife changes half of the diapers.  How many diapers does Jordan change per day?",
+    "gold_answer": "5",
+    "gold_rationale": "Jordan has 2 children, each requiring 5 diaper changes per day, for a total of 5*2=<<2*5=10>>10 diaper changes per day.\nJordan's wife changes half of the diapers, leaving Jordan to change the other half, for a total of 10/2=<<10/2=5>>5 diaper changes per day that Jordan is responsible for.\n#### 5",
+    "max_tokens": 32,
+    "temperature": 0.7,
+    "response_text": "Let's break this down step by step:\n\n1. First, we need to calculate the total number of diaper changes per day for both children:\n   - There",
+    "finish_reason": "length",
+    "pred_final_number": "1",
+    "correct": false,
+    "num_generated_tokens": 32,
+    "tokens": [
+      "Let",
+      "'s",
+      " break",
+      " this",
+      " down",
+      " step",
+      " by",
+      " step",
+      ":\n\n",
+      "1",
+      ".",
+      " First",
+      ",",
+      " we",
+      " need",
+      " to",
+      " calculate",
+      " the",
+      " total",
+      " number",
+      " of",
+      " diaper",
+      " changes",
+      " per",
+      " day",
+      " for",
+      " both",
+      " children",
+      ":\n",
+      "  ",
+      " -",
+      " There"
+    ],
+    "token_entropy": [
+      0.0018168329261243343,
+      2.1763610358327412e-10,
+      0.04037243500351906,
+      0.37286773324012756,
+      0.6332598924636841,
+      1.3151493227780975e-09,
+      0.0256794486194849,
+      2.795157527657466e-08,
+      5.604623584076762e-05,
+      1.5508992419199785e-06,
+      4.89250062685187e-08,
+      1.004654884338379,
+      7.869955381822891e-11,
+      0.8365285396575928,
+      0.031764935702085495,
+      4.208094636637405e-11,
+      0.8056780099868774,
+      0.00013556219346355647,
+      1.418512640682934e-09,
+      1.3512102441382012e-06,
+      1.7262376424131975e-12,
+      0.08282603323459625,
+      9.100390343519393e-06,
+      0.5411175489425659,
+      0.004698819015175104,
+      0.16409681737422943,
+      0.004929854068905115,
+      3.8095830490192384e-08,
+      0.165389284491539,
+      2.1865012911348458e-07,
+      0.0060393307358026505,
+      0.09339509904384613
+    ],
+    "trajectory_length": 32,
+    "raw_response": {
+      "id": "chatcmpl-a0a485ecf426cfcb",
+      "choices": [
+        {
+          "finish_reason": "length",
+          "index": 0,
+          "logprobs": {
+            "content": [
+              {
+                "token": "Let",
+                "bytes": [
+                  76,
+                  101,
+                  116
+                ],
+                "logprob": -0.0025028828531503677,
+                "top_logprobs": [
+                  {
+                    "token": "Let",
+                    "bytes": [
+                      76,
+                      101,
+                      116
+                    ],
+                    "logprob": -0.0025028828531503677,
+                    "entropy": null
+                  },
+                  {
+                    "token": "To",
+                    "bytes": [
+                      84,
+                      111
+                    ],
+                    "logprob": -6.002502918243408,
+                    "entropy": null
+                  },
+                  {
+                    "token": "Step",
+                    "bytes": [
+                      83,
+                      116,
+                      101,
+                      112
+                    ],
+                    "logprob": -10.75250244140625,
+                    "entropy": null
+                  },
+                  {
+                    "token": "Sure",
+                    "bytes": [
+                      83,
+                      117,
+                      114,
+                      101
+                    ],
+                    "logprob": -12.37750244140625,
+                    "entropy": null
+                  },
+                  {
+                    "token": "Okay",
+                    "bytes": [
+                      79,
+                      107,
+                      97,
+                      121
+                    ],
+                    "logprob": -14.37750244140625,
+                    "entropy": null
+                  }
+                ],
+                "entropy": 0.0018168329261243343
+              },
+              {
+                "token": "'s",
+                "bytes": [
+                  39,
+                  115
+                ],
+                "logprob": 0.0,
+                "top_logprobs": [
+                  {
+                    "token": "'s",
+                    "bytes": [
+                      39,
+                      115
+                    ],
+                    "logprob": 0.0,
+                    "entropy": null
+                  },
+                  {
+                    "token": " me",
+                    "bytes": [
+                      32,
+                      109,
+                      101
+                    ],
+                    "logprob": -18.0,
+                    "entropy": null
+                  },
+                  {
+                    "token": "'S",
+                    "bytes": [
+                      39,
+                      83
+                    ],
+                    "logprob": -19.4375,
+                    "entropy": null
+                  },
+                  {
+                    "token": "’s",
+                    "bytes": [
+                      226,
+                      128,
+                      153,
+                      115
+                    ],
+                    "logprob": -19.8125,
+                    "entropy": null
+                  },
+                  {
+                    "token": "\"s",
+                    "bytes": [
+                      34,
+                      115
+                    ],
+                    "logprob": -21.3125,
+                    "entropy": null
+                  }
+                ],
+                "entropy": 2.1763610358327412e-10
+              },
+              {
+                "token": " break",
+                "bytes": [
+                  32,
+                  98,
+                  114,
+                  101,
+                  97,
+                  107
+                ],
+                "logprob": -0.03030500002205372,
+                "top_logprobs": [
+                  {
+                    "token": " break",
+                    "bytes": [
+                      32,
+                      98,
+                      114,
+                      101,
+                      97,
+                      107
+                    ],
+                    "logprob": -0.03030500002205372,
+                    "entropy": null
+                  },
+                  {
+                    "token": " reason",
+                    "bytes": [
+                      32,
+                      114,
+                      101,
+                      97,
+                      115,
+                      111,
+                      110
+                    ],
+                    "logprob": -3.5303049087524414,
+                    "entropy": null
+                  },
+                  {
+                    "token": " approach",
+                    "bytes": [
+                      32,
+                      97,
+                      112,
+                      112,
+                      114,
+                      111,
+                      97,
+                      99,
+                      104
+                    ],
+                    "logprob": -8.155304908752441,
+                    "entropy": null
+                  },
+                  {
+                    "token": " solve",
+                    "bytes": [
+                      32,
+                      115,
+                      111,
+                      108,
+                      118,
+                      101
+                    ],
+                    "logprob": -8.530304908752441,
+                    "entropy": null
+                  },
+                  {
+                    "token": " reasoning",
+                    "bytes": [
+                      32,
+                      114,
+                      101,
+                      97,
+                      115,
+                      111,
+                      110,
+                      105,
+                      110,
+                      103
+                    ],
+                    "logprob": -10.655304908752441,
+                    "entropy": null
+                  }
+                ],
+                "entropy": 0.04037243500351906
+              },
+              {
+                "token": " this",
+                "bytes": [
+                  32,
+                  116,
+                  104,
+                  105,
+                  115
+                ],
+                "logprob": -0.2254147231578827,
+                "top_logprobs": [
+                  {
+                    "token": " this",
+                    "bytes": [
+                      32,
+                      116,
+                      104,
+                      105,
+                      115
+                    ],
+                    "logprob": -0.2254147231578827,
+                    "entropy": null
+                  },
+                  {
+                    "token": " down",
+                    "bytes": [
+                      32,
+                      100,
+                      111,
+                      119,
+                      110
+                    ],
+                    "logprob": -1.600414752960205,
+                    "entropy": null
+                  },
+                  {
+                    "token": " it",
+                    "bytes": [
+                      32,
+                      105,
+                      116
+                    ],
+                    "logprob": -13.225414276123047,
+                    "entropy": null
+                  },
+                  {
+                    "token": "_down",
+                    "bytes": [
+                      95,
+                      100,
+                      111,
+                      119,
+                      110
+                    ],
+                    "logprob": -16.475414276123047,
+                    "entropy": null
+                  },
+                  {
+                    "token": "this",
+                    "bytes": [
+                      116,
+                      104,
+                      105,
+                      115
+                    ],
+                    "logprob": -16.475414276123047,
+                    "entropy": null
+                  }
+                ],
+                "entropy": 0.37286773324012756
+              },
+              {
+                "token": " down",
+                "bytes": [
+                  32,
+                  100,
+                  111,
+                  119,
+                  110
+                ],
+                "logprob": -0.47419044375419617,
+                "top_logprobs": [
+                  {
+                    "token": " down",
+                    "bytes": [
+                      32,
+                      100,
+                      111,
+                      119,
+                      110
+                    ],
+                    "logprob": -0.47419044375419617,
+                    "entropy": null
+                  },
+                  {
+                    "token": " problem",
+                    "bytes": [
+                      32,
+                      112,
+                      114,
+                      111,
+                      98,
+                      108,
+                      101,
+                      109
+                    ],
+                    "logprob": -0.9741904735565186,
+                    "entropy": null
+                  },
+                  {
+                    "token": " reasoning",
+                    "bytes": [
+                      32,
+                      114,
+                      101,
+                      97,
+                      115,
+                      111,
+                      110,
+                      105,
+                      110,
+                      103
+                    ],
+                    "logprob": -9.099190711975098,
+                    "entropy": null
+                  },
+                  {
+                    "token": " step",
+                    "bytes": [
+                      32,
+                      115,
+                      116,
+                      101,
+                      112
+                    ],
+                    "logprob": -14.349190711975098,
+                    "entropy": null
+                  },
+                  {
+                    "token": " calculation",
+                    "bytes": [
+                      32,
+                      99,
+                      97,
+                      108,
+                      99,
+                      117,
+                      108,
+                      97,
+                      116,
+                      105,
+                      111,
+                      110
+                    ],
+                    "logprob": -15.224190711975098,
+                    "entropy": null
+                  }
+                ],
+                "entropy": 0.6332598924636841
+              },
+              {
+                "token": " step",
+                "bytes": [
+                  32,
+                  115,
+                  116,
+                  101,
+                  112
+                ],
+                "logprob": -1.1920928244535389e-07,
+                "top_logprobs": [
+                  {
+                    "token": " step",
+                    "bytes": [
+                      32,
+                      115,
+                      116,
+                      101,
+                      112
+                    ],
+                    "logprob": -1.1920928244535389e-07,
+                    "entropy": null
+                  },
+                  {
+                    "token": " into",
+                    "bytes": [
+                      32,
+                      105,
+                      110,
+                      116,
+                      111
+                    ],
+                    "logprob": -16.75,
+                    "entropy": null
+                  },
+                  {
+                    "token": "step",
+                    "bytes": [
+                      115,
+                      116,
+                      101,
+                      112
+                    ],
+                    "logprob": -17.75,
+                    "entropy": null
+                  },
+                  {
+                    "token": "-step",
+                    "bytes": [
+                      45,
+                      115,
+                      116,
+                      101,
+                      112
+                    ],
+                    "logprob": -18.75,
+                    "entropy": null
+                  },
+                  {
+                    "token": " logically",
+                    "bytes": [
+                      32,
+                      108,
+                      111,
+                      103,
+                      105,
+                      99,
+                      97,
+                      108,
+                      108,
+                      121
+                    ],
+                    "logprob": -19.875,
+                    "entropy": null
+                  }
+                ],
+                "entropy": 1.3151493227780975e-09
+              },
+              {
+                "token": " by",
+                "bytes": [
+                  32,
+                  98,
+                  121
+                ],
+                "logprob": -0.020542016252875328,
+                "top_logprobs": [
+                  {
+                    "token": " by",
+                    "bytes": [
+                      32,
+                      98,
+                      121
+                    ],
+                    "logprob": -0.020542016252875328,
+                    "entropy": null
+                  },
+                  {
+                    "token": "-by",
+                    "bytes": [
+                      45,
+                      98,
+                      121
+                    ],
+                    "logprob": -3.8955419063568115,
+                    "entropy": null
+                  },
+                  {
+                    "token": "_by",
+                    "bytes": [
+                      95,
+                      98,
+                      121
+                    ],
+                    "logprob": -16.08304214477539,
+                    "entropy": null
+                  },
+                  {
+                    "token": "by",
+                    "bytes": [
+                      98,
+                      121
+                    ],
+                    "logprob": -17.33304214477539,
+                    "entropy": null
+                  },
+                  {
+                    "token": " By",
+                    "bytes": [
+                      32,
+                      66,
+                      121
+                    ],
+                    "logprob": -17.89554214477539,
+                    "entropy": null
+                  }
+                ],
+                "entropy": 0.0256794486194849
+              },
+              {
+                "token": " step",
+                "bytes": [
+                  32,
+                  115,
+                  116,
+                  101,
+                  112
+                ],
+                "logprob": -7.152555099310121e-07,
+                "top_logprobs": [
+                  {
+                    "token": " step",
+                    "bytes": [
+                      32,
+                      115,
+                      116,
+                      101,
+                      112
+                    ],
+                    "logprob": -7.152555099310121e-07,
+                    "entropy": null
+                  },
+                  {
+                    "token": "-step",
+                    "bytes": [
+                      45,
+                      115,
+                      116,
+                      101,
+                      112
+                    ],
+                    "logprob": -14.375000953674316,
+                    "entropy": null
+                  },
+                  {
+                    "token": "step",
+                    "bytes": [
+                      115,
+                      116,
+                      101,
+                      112
+                    ],
+                    "logprob": -16.0,
+                    "entropy": null
+                  },
+                  {
+                    "token": "_step",
+                    "bytes": [
+                      95,
+                      115,
+                      116,
+                      101,
+                      112
+                    ],
+                    "logprob": -17.875,
+                    "entropy": null
+                  },
+                  {
+                    "token": ".step",
+                    "bytes": [
+                      46,
+                      115,
+                      116,
+                      101,
+                      112
+                    ],
+                    "logprob": -18.0,
+                    "entropy": null
+                  }
+                ],
+                "entropy": 2.795157527657466e-08
+              },
+              {
+                "token": ":\n\n",
+                "bytes": [
+                  58,
+                  10,
+                  10
+                ],
+                "logprob": -0.0002213471452705562,
+                "top_logprobs": [
+                  {
+                    "token": ":\n\n",
+                    "bytes": [
+                      58,
+                      10,
+                      10
+                    ],
+                    "logprob": -0.0002213471452705562,
+                    "entropy": null
+                  },
+                  {
+                    "token": ".\n\n",
+                    "bytes": [
+                      46,
+                      10,
+                      10
+                    ],
+                    "logprob": -9.250221252441406,
+                    "entropy": null
+                  },
+                  {
+                    "token": ":\n",
+                    "bytes": [
+                      58,
+                      10
+                    ],
+                    "logprob": -9.375221252441406,
+                    "entropy": null
+                  },
+                  {
+                    "token": " to",
+                    "bytes": [
+                      32,
+                      116,
+                      111
+                    ],
+                    "logprob": -10.125221252441406,
+                    "entropy": null
+                  },
+                  {
+                    "token": "：\n\n",
+                    "bytes": [
+                      239,
+                      188,
+                      154,
+                      10,
+                      10
+                    ],
+                    "logprob": -16.000221252441406,
+                    "entropy": null
+                  }
+                ],
+                "entropy": 5.604623584076762e-05
+              },
+              {
+                "token": "1",
+                "bytes": [
+                  49
+                ],
+                "logprob": -1.1801649634435307e-05,
+                "top_logprobs": [
+                  {
+                    "token": "1",
+                    "bytes": [
+                      49
+                    ],
+                    "logprob": -1.1801649634435307e-05,
+                    "entropy": null
+                  },
+                  {
+                    "token": "Step",
+                    "bytes": [
+                      83,
+                      116,
+                      101,
+                      112
+                    ],
+                    "logprob": -11.375011444091797,
+                    "entropy": null
+                  },
+                  {
+                    "token": "###",
+                    "bytes": [
+                      35,
+                      35,
+                      35
+                    ],
+                    "logprob": -15.500011444091797,
+                    "entropy": null
+                  },
+                  {
+                    "token": "2",
+                    "bytes": [
+                      50
+                    ],
+                    "logprob": -16.250011444091797,
+                    "entropy": null
+                  },
+                  {
+                    "token": "3",
+                    "bytes": [
+                      51
+                    ],
+                    "logprob": -18.125011444091797,
+                    "entropy": null
+                  }
+                ],
+                "entropy": 1.5508992419199785e-06
+              },
+              {
+                "token": ".",
+                "bytes": [
+                  46
+                ],
+                "logprob": -9.536738616588991e-07,
+                "top_logprobs": [
+                  {
+                    "token": ".",
+                    "bytes": [
+                      46
+                    ],
+                    "logprob": -9.536738616588991e-07,
+                    "entropy": null
+                  },
+                  {
+                    "token": ")",
+                    "bytes": [
+                      41
+                    ],
+                    "logprob": -13.875000953674316,
+                    "entropy": null
+                  },
+                  {
+                    "token": ").",
+                    "bytes": [
+                      41,
+                      46
+                    ],
+                    "logprob": -19.1875,
+                    "entropy": null
+                  },
+                  {
+                    "token": ".)",
+                    "bytes": [
+                      46,
+                      41
+                    ],
+                    "logprob": -19.75,
+                    "entropy": null
+                  },
+                  {
+                    "token": "。",
+                    "bytes": [
+                      227,
+                      128,
+                      130
+                    ],
+                    "logprob": -19.8125,
+                    "entropy": null
+                  }
+                ],
+                "entropy": 4.89250062685187e-08
+              },
+              {
+                "token": " First",
+                "bytes": [
+                  32,
+                  70,
+                  105,
+                  114,
+                  115,
+                  116
+                ],
+                "logprob": -0.6248462796211243,
+                "top_logprobs": [
+                  {
+                    "token": " First",
+                    "bytes": [
+                      32,
+                      70,
+                      105,
+                      114,
+                      115,
+                      116
+                    ],
+                    "logprob": -0.6248462796211243,
+                    "entropy": null
+                  },
+                  {
+                    "token": " Total",
+                    "bytes": [
+                      32,
+                      84,
+                      111,
+                      116,
+                      97,
+                      108
+                    ],
+                    "logprob": -1.6248462200164795,
+                    "entropy": null
+                  },
+                  {
+                    "token": " **",
+                    "bytes": [
+                      32,
+                      42,
+                      42
+                    ],
+                    "logprob": -2.2498462200164795,
+                    "entropy": null
+                  },
+                  {
+                    "token": " Each",
+                    "bytes": [
+                      32,
+                      69,
+                      97,
+                      99,
+                      104
+                    ],
+                    "logprob": -2.7498462200164795,
+                    "entropy": null
+                  },
+                  {
+                    "token": " Jordan",
+                    "bytes": [
+                      32,
+                      74,
+                      111,
+                      114,
+                      100,
+                      97,
+                      110
+                    ],
+                    "logprob": -3.2498462200164795,
+                    "entropy": null
+                  }
+                ],
+                "entropy": 1.004654884338379
+              },
+              {
+                "token": ",",
+                "bytes": [
+                  44
+                ],
+                "logprob": 0.0,
+                "top_logprobs": [
+                  {
+                    "token": ",",
+                    "bytes": [
+                      44
+                    ],
+                    "logprob": 0.0,
+                    "entropy": null
+                  },
+                  {
+                    "token": ":",
+                    "bytes": [
+                      58
+                    ],
+                    "logprob": -19.125,
+                    "entropy": null
+                  },
+                  {
+                    "token": " determine",
+                    "bytes": [
+                      32,
+                      100,
+                      101,
+                      116,
+                      101,
+                      114,
+                      109,
+                      105,
+                      110,
+                      101
+                    ],
+                    "logprob": -19.625,
+                    "entropy": null
+                  },
+                  {
+                    "token": "，",
+                    "bytes": [
+                      239,
+                      188,
+                      140
+                    ],
+                    "logprob": -20.0,
+                    "entropy": null
+                  },
+                  {
+                    "token": " we",
+                    "bytes": [
+                      32,
+                      119,
+                      101
+                    ],
+                    "logprob": -20.375,
+                    "entropy": null
+                  }
+                ],
+                "entropy": 7.869955381822891e-11
+              },
+              {
+                "token": " we",
+                "bytes": [
+                  32,
+                  119,
+                  101
+                ],
+                "logprob": -0.5473016500473022,
+                "top_logprobs": [
+                  {
+                    "token": " we",
+                    "bytes": [
+                      32,
+                      119,
+                      101
+                    ],
+                    "logprob": -0.5473016500473022,
+                    "entropy": null
+                  },
+                  {
+                    "token": " calculate",
+                    "bytes": [
+                      32,
+                      99,
+                      97,
+                      108,
+                      99,
+                      117,
+                      108,
+                      97,
+                      116,
+                      101
+                    ],
+                    "logprob": -1.2973016500473022,
+                    "entropy": null
+                  },
+                  {
+                    "token": " determine",
+                    "bytes": [
+                      32,
+                      100,
+                      101,
+                      116,
+                      101,
+                      114,
+                      109,
+                      105,
+                      110,
+                      101
+                    ],
+                    "logprob": -2.297301769256592,
+                    "entropy": null
+                  },
+                  {
+                    "token": " let",
+                    "bytes": [
+                      32,
+                      108,
+                      101,
+                      116
+                    ],
+                    "logprob": -3.047301769256592,
+                    "entropy": null
+                  },
+                  {
+                    "token": " find",
+                    "bytes": [
+                      32,
+                      102,
+                      105,
+                      110,
+                      100
+                    ],
+                    "logprob": -8.547301292419434,
+                    "entropy": null
+                  }
+                ],
+                "entropy": 0.8365285396575928
+              },
+              {
+                "token": " need",
+                "bytes": [
+                  32,
+                  110,
+                  101,
+                  101,
+                  100
+                ],
+                "logprob": -0.026015575975179672,
+                "top_logprobs": [
+                  {
+                    "token": " need",
+                    "bytes": [
+                      32,
+                      110,
+                      101,
+                      101,
+                      100
+                    ],
+                    "logprob": -0.026015575975179672,
+                    "entropy": null
+                  },
+                  {
+                    "token": " calculate",
+                    "bytes": [
+                      32,
+                      99,
+                      97,
+                      108,
+                      99,
+                      117,
+                      108,
+                      97,
+                      116,
+                      101
+                    ],
+                    "logprob": -3.776015520095825,
+                    "entropy": null
+                  },
+                  {
+                    "token": " determine",
+                    "bytes": [
+                      32,
+                      100,
+                      101,
+                      116,
+                      101,
+                      114,
+                      109,
+                      105,
+                      110,
+                      101
+                    ],
+                    "logprob": -6.026015758514404,
+                    "entropy": null
+                  },
+                  {
+                    "token": "'ll",
+                    "bytes": [
+                      39,
+                      108,
+                      108
+                    ],
+                    "logprob": -8.151015281677246,
+                    "entropy": null
+                  },
+                  {
+                    "token": " know",
+                    "bytes": [
+                      32,
+                      107,
+                      110,
+                      111,
+                      119
+                    ],
+                    "logprob": -10.276015281677246,
+                    "entropy": null
+                  }
+                ],
+                "entropy": 0.031764935702085495
+              },
+              {
+                "token": " to",
+                "bytes": [
+                  32,
+                  116,
+                  111
+                ],
+                "logprob": 0.0,
+                "top_logprobs": [
+                  {
+                    "token": " to",
+                    "bytes": [
+                      32,
+                      116,
+                      111
+                    ],
+                    "logprob": 0.0,
+                    "entropy": null
+                  },
+                  {
+                    "token": " determine",
+                    "bytes": [
+                      32,
+                      100,
+                      101,
+                      116,
+                      101,
+                      114,
+                      109,
+                      105,
+                      110,
+                      101
+                    ],
+                    "logprob": -19.75,
+                    "entropy": null
+                  },
+                  {
+                    "token": " the",
+                    "bytes": [
+                      32,
+                      116,
+                      104,
+                      101
+                    ],
+                    "logprob": -19.75,
+                    "entropy": null
+                  },
+                  {
+                    "token": " calculate",
+                    "bytes": [
+                      32,
+                      99,
+                      97,
+                      108,
+                      99,
+                      117,
+                      108,
+                      97,
+                      116,
+                      101
+                    ],
+                    "logprob": -20.375,
+                    "entropy": null
+                  },
+                  {
+                    "token": " find",
+                    "bytes": [
+                      32,
+                      102,
+                      105,
+                      110,
+                      100
+                    ],
+                    "logprob": -20.875,
+                    "entropy": null
+                  }
+                ],
+                "entropy": 4.208094636637405e-11
+              },
+              {
+                "token": " calculate",
+                "bytes": [
+                  32,
+                  99,
+                  97,
+                  108,
+                  99,
+                  117,
+                  108,
+                  97,
+                  116,
+                  101
+                ],
+                "logprob": -0.5775537490844727,
+                "top_logprobs": [
+                  {
+                    "token": " calculate",
+                    "bytes": [
+                      32,
+                      99,
+                      97,
+                      108,
+                      99,
+                      117,
+                      108,
+                      97,
+                      116,
+                      101
+                    ],
+                    "logprob": -0.5775537490844727,
+                    "entropy": null
+                  },
+                  {
+                    "token": " determine",
+                    "bytes": [
+                      32,
+                      100,
+                      101,
+                      116,
+                      101,
+                      114,
+                      109,
+                      105,
+                      110,
+                      101
+                    ],
+                    "logprob": -1.0775537490844727,
+                    "entropy": null
+                  },
+                  {
+                    "token": " find",
+                    "bytes": [
+                      32,
+                      102,
+                      105,
+                      110,
+                      100
+                    ],
+                    "logprob": -2.3275537490844727,
+                    "entropy": null
+                  },
+                  {
+                    "token": " figure",
+                    "bytes": [
+                      32,
+                      102,
+                      105,
+                      103,
+                      117,
+                      114,
+                      101
+                    ],
+                    "logprob": -7.202553749084473,
+                    "entropy": null
+                  },
+                  {
+                    "token": " know",
+                    "bytes": [
+                      32,
+                      107,
+                      110,
+                      111,
+                      119
+                    ],
+                    "logprob": -11.327553749084473,
+                    "entropy": null
+                  }
+                ],
+                "entropy": 0.8056780099868774
+              },
+              {
+                "token": " the",
+                "bytes": [
+                  32,
+                  116,
+                  104,
+                  101
+                ],
+                "logprob": -0.000339569611242041,
+                "top_logprobs": [
+                  {
+                    "token": " the",
+                    "bytes": [
+                      32,
+                      116,
+                      104,
+                      101
+                    ],
+                    "logprob": -0.000339569611242041,
+                    "entropy": null
+                  },
+                  {
+                    "token": " how",
+                    "bytes": [
+                      32,
+                      104,
+                      111,
+                      119
+                    ],
+                    "logprob": -8.00033950805664,
+                    "entropy": null
+                  },
+                  {
+                    "token": " total",
+                    "bytes": [
+                      32,
+                      116,
+                      111,
+                      116,
+                      97,
+                      108
+                    ],
+                    "logprob": -12.37533950805664,
+                    "entropy": null
+                  },
+                  {
+                    "token": " a",
+                    "bytes": [
+                      32,
+                      97
+                    ],
+                    "logprob": -20.62533950805664,
+                    "entropy": null
+                  },
+                  {
+                    "token": " in",
+                    "bytes": [
+                      32,
+                      105,
+                      110
+                    ],
+                    "logprob": -21.50033950805664,
+                    "entropy": null
+                  }
+                ],
+                "entropy": 0.00013556219346355647
+              },
+              {
+                "token": " total",
+                "bytes": [
+                  32,
+                  116,
+                  111,
+                  116,
+                  97,
+                  108
+                ],
+                "logprob": 0.0,
+                "top_logprobs": [
+                  {
+                    "token": " total",
+                    "bytes": [
+                      32,
+                      116,
+                      111,
+                      116,
+                      97,
+                      108
+                    ],
+                    "logprob": 0.0,
+                    "entropy": null
+                  },
+                  {
+                    "token": " daily",
+                    "bytes": [
+                      32,
+                      100,
+                      97,
+                      105,
+                      108,
+                      121
+                    ],
+                    "logprob": -17.0,
+                    "entropy": null
+                  },
+                  {
+                    "token": "total",
+                    "bytes": [
+                      116,
+                      111,
+                      116,
+                      97,
+                      108
+                    ],
+                    "logprob": -17.5,
+                    "entropy": null
+                  },
+                  {
+                    "token": " number",
+                    "bytes": [
+                      32,
+                      110,
+                      117,
+                      109,
+                      98,
+                      101,
+                      114
+                    ],
+                    "logprob": -18.125,
+                    "entropy": null
+                  },
+                  {
+                    "token": "总",
+                    "bytes": [
+                      230,
+                      128,
+                      187
+                    ],
+                    "logprob": -18.25,
+                    "entropy": null
+                  }
+                ],
+                "entropy": 1.418512640682934e-09
+              },
+              {
+                "token": " number",
+                "bytes": [
+                  32,
+                  110,
+                  117,
+                  109,
+                  98,
+                  101,
+                  114
+                ],
+                "logprob": -1.2874520507466514e-05,
+                "top_logprobs": [
+                  {
+                    "token": " number",
+                    "bytes": [
+                      32,
+                      110,
+                      117,
+                      109,
+                      98,
+                      101,
+                      114
+                    ],
+                    "logprob": -1.2874520507466514e-05,
+                    "entropy": null
+                  },
+                  {
+                    "token": " daily",
+                    "bytes": [
+                      32,
+                      100,
+                      97,
+                      105,
+                      108,
+                      121
+                    ],
+                    "logprob": -11.750012397766113,
+                    "entropy": null
+                  },
+                  {
+                    "token": " diaper",
+                    "bytes": [
+                      32,
+                      100,
+                      105,
+                      97,
+                      112,
+                      101,
+                      114
+                    ],
+                    "logprob": -12.500012397766113,
+                    "entropy": null
+                  },
+                  {
+                    "token": " amount",
+                    "bytes": [
+                      32,
+                      97,
+                      109,
+                      111,
+                      117,
+                      110,
+                      116
+                    ],
+                    "logprob": -13.875012397766113,
+                    "entropy": null
+                  },
+                  {
+                    "token": "number",
+                    "bytes": [
+                      110,
+                      117,
+                      109,
+                      98,
+                      101,
+                      114
+                    ],
+                    "logprob": -15.250012397766113,
+                    "entropy": null
+                  }
+                ],
+                "entropy": 1.3512102441382012e-06
+              },
+              {
+                "token": " of",
+                "bytes": [
+                  32,
+                  111,
+                  102
+                ],
+                "logprob": 0.0,
+                "top_logprobs": [
+                  {
+                    "token": " of",
+                    "bytes": [
+                      32,
+                      111,
+                      102
+                    ],
+                    "logprob": 0.0,
+                    "entropy": null
+                  },
+                  {
+                    "token": " or",
+                    "bytes": [
+                      32,
+                      111,
+                      114
+                    ],
+                    "logprob": -21.75,
+                    "entropy": null
+                  },
+                  {
+                    "token": " di",
+                    "bytes": [
+                      32,
+                      100,
+                      105
+                    ],
+                    "logprob": -22.25,
+                    "entropy": null
+                  },
+                  {
+                    "token": " của",
+                    "bytes": [
+                      32,
+                      99,
+                      225,
+                      187,
+                      167,
+                      97
+                    ],
+                    "logprob": -23.25,
+                    "entropy": null
+                  },
+                  {
+                    "token": " diapers",
+                    "bytes": [
+                      32,
+                      100,
+                      105,
+                      97,
+                      112,
+                      101,
+                      114,
+                      115
+                    ],
+                    "logprob": -23.625,
+                    "entropy": null
+                  }
+                ],
+                "entropy": 1.7262376424131975e-12
+              },
+              {
+                "token": " diaper",
+                "bytes": [
+                  32,
+                  100,
+                  105,
+                  97,
+                  112,
+                  101,
+                  114
+                ],
+                "logprob": -0.05497268959879875,
+                "top_logprobs": [
+                  {
+                    "token": " diaper",
+                    "bytes": [
+                      32,
+                      100,
+                      105,
+                      97,
+                      112,
+                      101,
+                      114
+                    ],
+                    "logprob": -0.05497268959879875,
+                    "entropy": null
+                  },
+                  {
+                    "token": " diapers",
+                    "bytes": [
+                      32,
+                      100,
+                      105,
+                      97,
+                      112,
+                      101,
+                      114,
+                      115
+                    ],
+                    "logprob": -2.9299726486206055,
+                    "entropy": null
+                  },
+                  {
+                    "token": " di",
+                    "bytes": [
+                      32,
+                      100,
+                      105
+                    ],
+                    "logprob": -9.804972648620605,
+                    "entropy": null
+                  },
+                  {
+                    "token": " daily",
+                    "bytes": [
+                      32,
+                      100,
+                      97,
+                      105,
+                      108,
+                      121
+                    ],
+                    "logprob": -11.054972648620605,
+                    "entropy": null
+                  },
+                  {
+                    "token": " disposable",
+                    "bytes": [
+                      32,
+                      100,
+                      105,
+                      115,
+                      112,
+                      111,
+                      115,
+                      97,
+                      98,
+                      108,
+                      101
+                    ],
+                    "logprob": -11.679972648620605,
+                    "entropy": null
+                  }
+                ],
+                "entropy": 0.08282603323459625
+              },
+              {
+                "token": " changes",
+                "bytes": [
+                  32,
+                  99,
+                  104,
+                  97,
+                  110,
+                  103,
+                  101,
+                  115
+                ],
+                "logprob": -5.054346183896996e-05,
+                "top_logprobs": [
+                  {
+                    "token": " changes",
+                    "bytes": [
+                      32,
+                      99,
+                      104,
+                      97,
+                      110,
+                      103,
+                      101,
+                      115
+                    ],
+                    "logprob": -5.054346183896996e-05,
+                    "entropy": null
+                  },
+                  {
+                    "token": "changes",
+                    "bytes": [
+                      99,
+                      104,
+                      97,
+                      110,
+                      103,
+                      101,
+                      115
+                    ],
+                    "logprob": -10.12505054473877,
+                    "entropy": null
+                  },
+                  {
+                    "token": " chang",
+                    "bytes": [
+                      32,
+                      99,
+                      104,
+                      97,
+                      110,
+                      103
+                    ],
+                    "logprob": -11.75005054473877,
+                    "entropy": null
+                  },
+                  {
+                    "token": " change",
+                    "bytes": [
+                      32,
+                      99,
+                      104,
+                      97,
+                      110,
+                      103,
+                      101
+                    ],
+                    "logprob": -14.37505054473877,
+                    "entropy": null
+                  },
+                  {
+                    "token": "Changes",
+                    "bytes": [
+                      67,
+                      104,
+                      97,
+                      110,
+                      103,
+                      101,
+                      115
+                    ],
+                    "logprob": -14.62505054473877,
+                    "entropy": null
+                  }
+                ],
+                "entropy": 9.100390343519393e-06
+              },
+              {
+                "token": " per",
+                "bytes": [
+                  32,
+                  112,
+                  101,
+                  114
+                ],
+                "logprob": -0.32898300886154175,
+                "top_logprobs": [
+                  {
+                    "token": " per",
+                    "bytes": [
+                      32,
+                      112,
+                      101,
+                      114
+                    ],
+                    "logprob": -0.32898300886154175,
+                    "entropy": null
+                  },
+                  {
+                    "token": " needed",
+                    "bytes": [
+                      32,
+                      110,
+                      101,
+                      101,
+                      100,
+                      101,
+                      100
+                    ],
+                    "logprob": -1.7039830684661865,
+                    "entropy": null
+                  },
+                  {
+                    "token": " required",
+                    "bytes": [
+                      32,
+                      114,
+                      101,
+                      113,
+                      117,
+                      105,
+                      114,
+                      101,
+                      100
+                    ],
+                    "logprob": -2.9539830684661865,
+                    "entropy": null
+                  },
+                  {
+                    "token": " for",
+                    "bytes": [
+                      32,
+                      102,
+                      111,
+                      114
+                    ],
+                    "logprob": -3.0789830684661865,
+                    "entropy": null
+                  },
+                  {
+                    "token": ":\n",
+                    "bytes": [
+                      58,
+                      10
+                    ],
+                    "logprob": -9.453983306884766,
+                    "entropy": null
+                  }
+                ],
+                "entropy": 0.5411175489425659
+              },
+              {
+                "token": " day",
+                "bytes": [
+                  32,
+                  100,
+                  97,
+                  121
+                ],
+                "logprob": -0.0052339909598231316,
+                "top_logprobs": [
+                  {
+                    "token": " day",
+                    "bytes": [
+                      32,
+                      100,
+                      97,
+                      121
+                    ],
+                    "logprob": -0.0052339909598231316,
+                    "entropy": null
+                  },
+                  {
+                    "token": " child",
+                    "bytes": [
+                      32,
+                      99,
+                      104,
+                      105,
+                      108,
+                      100
+                    ],
+                    "logprob": -5.2552337646484375,
+                    "entropy": null
+                  },
+                  {
+                    "token": " children",
+                    "bytes": [
+                      32,
+                      99,
+                      104,
+                      105,
+                      108,
+                      100,
+                      114,
+                      101,
+                      110
+                    ],
+                    "logprob": -16.505233764648438,
+                    "entropy": null
+                  },
+                  {
+                    "token": "day",
+                    "bytes": [
+                      100,
+                      97,
+                      121
+                    ],
+                    "logprob": -17.505233764648438,
+                    "entropy": null
+                  },
+                  {
+                    "token": " week",
+                    "bytes": [
+                      32,
+                      119,
+                      101,
+                      101,
+                      107
+                    ],
+                    "logprob": -18.630233764648438,
+                    "entropy": null
+                  }
+                ],
+                "entropy": 0.004698819015175104
+              },
+              {
+                "token": " for",
+                "bytes": [
+                  32,
+                  102,
+                  111,
+                  114
+                ],
+                "logprob": -0.10133398324251175,
+                "top_logprobs": [
+                  {
+                    "token": " for",
+                    "bytes": [
+                      32,
+                      102,
+                      111,
+                      114
+                    ],
+                    "logprob": -0.10133398324251175,
+                    "entropy": null
+                  },
+                  {
+                    "token": ":\n",
+                    "bytes": [
+                      58,
+                      10
+                    ],
+                    "logprob": -2.3513340950012207,
+                    "entropy": null
+                  },
+                  {
+                    "token": ".\n",
+                    "bytes": [
+                      46,
+                      10
+                    ],
+                    "logprob": -7.601334095001221,
+                    "entropy": null
+                  },
+                  {
+                    "token": ".",
+                    "bytes": [
+                      46
+                    ],
+                    "logprob": -7.601334095001221,
+                    "entropy": null
+                  },
+                  {
+                    "token": " required",
+                    "bytes": [
+                      32,
+                      114,
+                      101,
+                      113,
+                      117,
+                      105,
+                      114,
+                      101,
+                      100
+                    ],
+                    "logprob": -9.601333618164062,
+                    "entropy": null
+                  }
+                ],
+                "entropy": 0.16409681737422943
+              },
+              {
+                "token": " both",
+                "bytes": [
+                  32,
+                  98,
+                  111,
+                  116,
+                  104
+                ],
+                "logprob": -0.005810868460685015,
+                "top_logprobs": [
+                  {
+                    "token": " both",
+                    "bytes": [
+                      32,
+                      98,
+                      111,
+                      116,
+                      104
+                    ],
+                    "logprob": -0.005810868460685015,
+                    "entropy": null
+                  },
+                  {
+                    "token": " all",
+                    "bytes": [
+                      32,
+                      97,
+                      108,
+                      108
+                    ],
+                    "logprob": -5.255810737609863,
+                    "entropy": null
+                  },
+                  {
+                    "token": " the",
+                    "bytes": [
+                      32,
+                      116,
+                      104,
+                      101
+                    ],
+                    "logprob": -7.755810737609863,
+                    "entropy": null
+                  },
+                  {
+                    "token": " Jordan",
+                    "bytes": [
+                      32,
+                      74,
+                      111,
+                      114,
+                      100,
+                      97,
+                      110
+                    ],
+                    "logprob": -8.880810737609863,
+                    "entropy": null
+                  },
+                  {
+                    "token": " ",
+                    "bytes": [
+                      32
+                    ],
+                    "logprob": -11.755810737609863,
+                    "entropy": null
+                  }
+                ],
+                "entropy": 0.004929854068905115
+              },
+              {
+                "token": " children",
+                "bytes": [
+                  32,
+                  99,
+                  104,
+                  105,
+                  108,
+                  100,
+                  114,
+                  101,
+                  110
+                ],
+                "logprob": -9.536738616588991e-07,
+                "top_logprobs": [
+                  {
+                    "token": " children",
+                    "bytes": [
+                      32,
+                      99,
+                      104,
+                      105,
+                      108,
+                      100,
+                      114,
+                      101,
+                      110
+                    ],
+                    "logprob": -9.536738616588991e-07,
+                    "entropy": null
+                  },
+                  {
+                    "token": " kids",
+                    "bytes": [
+                      32,
+                      107,
+                      105,
+                      100,
+                      115
+                    ],
+                    "logprob": -14.375000953674316,
+                    "entropy": null
+                  },
+                  {
+                    "token": " of",
+                    "bytes": [
+                      32,
+                      111,
+                      102
+                    ],
+                    "logprob": -14.875000953674316,
+                    "entropy": null
+                  },
+                  {
+                    "token": "children",
+                    "bytes": [
+                      99,
+                      104,
+                      105,
+                      108,
+                      100,
+                      114,
+                      101,
+                      110
+                    ],
+                    "logprob": -17.25,
+                    "entropy": null
+                  },
+                  {
+                    "token": "孩子们",
+                    "bytes": [
+                      229,
+                      173,
+                      169,
+                      229,
+                      173,
+                      144,
+                      228,
+                      187,
+                      172
+                    ],
+                    "logprob": -18.375,
+                    "entropy": null
+                  }
+                ],
+                "entropy": 3.8095830490192384e-08
+              },
+              {
+                "token": ":\n",
+                "bytes": [
+                  58,
+                  10
+                ],
+                "logprob": -0.10287891328334808,
+                "top_logprobs": [
+                  {
+                    "token": ":\n",
+                    "bytes": [
+                      58,
+                      10
+                    ],
+                    "logprob": -0.10287891328334808,
+                    "entropy": null
+                  },
+                  {
+                    "token": ".\n",
+                    "bytes": [
+                      46,
+                      10
+                    ],
+                    "logprob": -2.3528788089752197,
+                    "entropy": null
+                  },
+                  {
+                    "token": " combined",
+                    "bytes": [
+                      32,
+                      99,
+                      111,
+                      109,
+                      98,
+                      105,
+                      110,
+                      101,
+                      100
+                    ],
+                    "logprob": -6.227879047393799,
+                    "entropy": null
+                  },
+                  {
+                    "token": ".",
+                    "bytes": [
+                      46
+                    ],
+                    "logprob": -7.352879047393799,
+                    "entropy": null
+                  },
+                  {
+                    "token": ":\n\n",
+                    "bytes": [
+                      58,
+                      10,
+                      10
+                    ],
+                    "logprob": -10.47787857055664,
+                    "entropy": null
+                  }
+                ],
+                "entropy": 0.165389284491539
+              },
+              {
+                "token": "  ",
+                "bytes": [
+                  32,
+                  32
+                ],
+                "logprob": -3.2186455882765586e-06,
+                "top_logprobs": [
+                  {
+                    "token": "  ",
+                    "bytes": [
+                      32,
+                      32
+                    ],
+                    "logprob": -3.2186455882765586e-06,
+                    "entropy": null
+                  },
+                  {
+                    "token": "   \n",
+                    "bytes": [
+                      32,
+                      32,
+                      32,
+                      10
+                    ],
+                    "logprob": -12.87500286102295,
+                    "entropy": null
+                  },
+                  {
+                    "token": "   ",
+                    "bytes": [
+                      32,
+                      32,
+                      32
+                    ],
+                    "logprob": -14.25000286102295,
+                    "entropy": null
+                  },
+                  {
+                    "token": "2",
+                    "bytes": [
+                      50
+                    ],
+                    "logprob": -18.125003814697266,
+                    "entropy": null
+                  },
+                  {
+                    "token": "\\[",
+                    "bytes": [
+                      92,
+                      91
+                    ],
+                    "logprob": -19.687503814697266,
+                    "entropy": null
+                  }
+                ],
+                "entropy": 2.1865012911348458e-07
+              },
+              {
+                "token": " -",
+                "bytes": [
+                  32,
+                  45
+                ],
+                "logprob": -0.007271017879247665,
+                "top_logprobs": [
+                  {
+                    "token": " -",
+                    "bytes": [
+                      32,
+                      45
+                    ],
+                    "logprob": -0.007271017879247665,
+                    "entropy": null
+                  },
+                  {
+                    "token": " Each",
+                    "bytes": [
+                      32,
+                      69,
+                      97,
+                      99,
+                      104
+                    ],
+                    "logprob": -5.257270812988281,
+                    "entropy": null
+                  },
+                  {
+                    "token": " ",
+                    "bytes": [
+                      32
+                    ],
+                    "logprob": -6.257270812988281,
+                    "entropy": null
+                  },
+                  {
+                    "token": " *",
+                    "bytes": [
+                      32,
+                      42
+                    ],
+                    "logprob": -9.507270812988281,
+                    "entropy": null
+                  },
+                  {
+                    "token": " Jordan",
+                    "bytes": [
+                      32,
+                      74,
+                      111,
+                      114,
+                      100,
+                      97,
+                      110
+                    ],
+                    "logprob": -10.257270812988281,
+                    "entropy": null
+                  }
+                ],
+                "entropy": 0.0060393307358026505
+              },
+              {
+                "token": " There",
+                "bytes": [
+                  32,
+                  84,
+                  104,
+                  101,
+                  114,
+                  101
+                ],
+                "logprob": -3.0682425498962402,
+                "top_logprobs": [
+                  {
+                    "token": " There",
+                    "bytes": [
+                      32,
+                      84,
+                      104,
+                      101,
+                      114,
+                      101
+                    ],
+                    "logprob": -3.0682425498962402,
+                    "entropy": null
+                  },
+                  {
+                    "token": " Each",
+                    "bytes": [
+                      32,
+                      69,
+                      97,
+                      99,
+                      104
+                    ],
+                    "logprob": -0.06824265420436859,
+                    "entropy": null
+                  },
+                  {
+                    "token": " ",
+                    "bytes": [
+                      32
+                    ],
+                    "logprob": -4.31824254989624,
+                    "entropy": null
+                  },
+                  {
+                    "token": " Jordan",
+                    "bytes": [
+                      32,
+                      74,
+                      111,
+                      114,
+                      100,
+                      97,
+                      110
+                    ],
+                    "logprob": -5.19324254989624,
+                    "entropy": null
+                  },
+                  {
+                    "token": " We",
+                    "bytes": [
+                      32,
+                      87,
+                      101
+                    ],
+                    "logprob": -7.69324254989624,
+                    "entropy": null
+                  }
+                ],
+                "entropy": 0.09339509904384613
+              }
+            ],
+            "refusal": null
+          },
+          "message": {
+            "content": "Let's break this down step by step:\n\n1. First, we need to calculate the total number of diaper changes per day for both children:\n   - There",
+            "refusal": null,
+            "role": "assistant",
+            "annotations": null,
+            "audio": null,
+            "function_call": null,
+            "tool_calls": [],
+            "reasoning": null
+          },
+          "stop_reason": null,
+          "token_ids": null
+        }
+      ],
+      "created": 1773234423,
+      "model": "qwen25-7b-reasoning",
+      "object": "chat.completion",
+      "service_tier": null,
+      "system_fingerprint": null,
+      "usage": {
+        "completion_tokens": 32,
+        "prompt_tokens": 72,
+        "total_tokens": 104,
+        "completion_tokens_details": null,
+        "prompt_tokens_details": null
+      },
+      "prompt_logprobs": null,
+      "prompt_token_ids": null,
+      "kv_transfer_params": null
+    },
+    "entropy_mean": 0.15047873270218795,
+    "entropy_max": 1.004654884338379,
+    "entropy_min": 1.7262376424131975e-12,
+    "entropy_last10_mean": 0.09796761108083665,
+    "entropy_tail_mean": 0.05481868268443213
+  }
+]
