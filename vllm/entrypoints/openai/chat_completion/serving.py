@@ -7,6 +7,7 @@ import time
 from collections.abc import AsyncGenerator, AsyncIterator
 from collections.abc import Sequence as GenericSequence
 from typing import Any, Final
+import math
 
 import jinja2
 import partial_json_parser
@@ -827,7 +828,7 @@ class OpenAIServingChat(OpenAIServing):
                             tokenizer=tokenizer,
                             num_output_top_logprobs=request.top_logprobs,
                             return_as_token_id=request.return_tokens_as_token_ids,
-                            token_entropies=getattr(output, "token_entropy", None),
+                            token_entropies=output.token_entropy,
                         )
                     else:
                         logprobs = None
@@ -1445,7 +1446,7 @@ class OpenAIServingChat(OpenAIServing):
                     num_output_top_logprobs=request.top_logprobs,
                     tokenizer=tokenizer,
                     return_as_token_id=request.return_tokens_as_token_ids,
-                    token_entropies=getattr(output, "token_entropy", None),
+                    token_entropies=output.token_entropy,
                 )
             else:
                 logprobs = None
@@ -1843,12 +1844,11 @@ class OpenAIServingChat(OpenAIServing):
 
         for i, token_id in enumerate(token_ids):
             step_top_logprobs = top_logprobs[i]
-
-            entropy_i = (
-                float(token_entropies[i])
-                if token_entropies is not None and i < len(token_entropies)
-                else None
-            )
+            
+            entropy_i = None
+            if token_entropies is not None and i < len(token_entropies):
+                val = float(token_entropies[i])
+                entropy_i = val if math.isfinite(val) else None
 
             if token_entropies is not None and i == 0 and len(token_entropies) > 0:
                 print("DEBUG serving first entropy:", float(token_entropies[0]))

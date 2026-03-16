@@ -144,8 +144,6 @@ class RequestOutput:
         self.kv_transfer_params = kv_transfer_params
 
     def add(self, next_output: "RequestOutput", aggregate: bool) -> None:
-        """Merge subsequent RequestOutput into this one"""
-
         self.finished |= next_output.finished
         self.kv_transfer_params = next_output.kv_transfer_params
 
@@ -154,21 +152,24 @@ class RequestOutput:
                 if completion.index == next_completion.index:
                     if aggregate:
                         completion.text += next_completion.text
+
                         if not isinstance(completion.token_ids, MutableSequence):
                             completion.token_ids = list(completion.token_ids)
                         completion.token_ids.extend(next_completion.token_ids)
+
                         if next_completion.logprobs:
                             assert completion.logprobs is not None
                             completion.logprobs.extend(next_completion.logprobs)  # type: ignore[arg-type]
-                        if next_completion.token_entropy:
+
+                        if next_completion.token_entropy is not None:
                             if completion.token_entropy is None:
                                 completion.token_entropy = []
                             completion.token_entropy.extend(next_completion.token_entropy)
+
                         completion.cumulative_logprob = next_completion.cumulative_logprob
                         completion.finish_reason = next_completion.finish_reason
                         completion.stop_reason = next_completion.stop_reason
                     else:
-                        # Replace the output with the new one
                         self.outputs[i] = next_completion
                     break
             else:

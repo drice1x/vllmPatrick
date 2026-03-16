@@ -160,7 +160,7 @@ class EngineCoreOutput(
 
     new_logprobs: LogprobsLists | None = None
     new_prompt_logprobs_tensors: LogprobsTensors | None = None
-    token_entropy: list[float] | None = None
+    new_token_entropy: list[float] | None = None
 
     pooling_output: torch.Tensor | None = None
 

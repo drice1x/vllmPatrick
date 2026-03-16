@@ -247,7 +247,6 @@ class AsyncGPUModelRunnerOutput(AsyncModelRunnerOutput):
             )
 
             self.async_copy_ready_event.record()
-            self.async_copy_ready_event.record()
 
     def get_output(self) -> ModelRunnerOutput:
         max_gen_len = self.sampled_token_ids_cpu.shape[-1]
@@ -275,27 +274,22 @@ class AsyncGPUModelRunnerOutput(AsyncModelRunnerOutput):
                 ]
                 for i in self._invalid_req_indices:
                     entropy_lists[i].clear()
-
         else:
-            valid_sampled_token_ids, logprobs_lists, entropy_lists = RejectionSampler.parse_output(
-                self.sampled_token_ids_cpu,
-                self.vocab_size,
-                self._invalid_req_indices,
-                logprobs_tensors=self._logprobs_tensors_cpu,
-                token_entropy=self.token_entropy_cpu,
+            valid_sampled_token_ids, logprobs_lists, entropy_lists = (
+                RejectionSampler.parse_output(
+                    self.sampled_token_ids_cpu,
+                    self.vocab_size,
+                    self._invalid_req_indices,
+                    logprobs_tensors=self._logprobs_tensors_cpu,
+                    token_entropy=self.token_entropy_cpu,
+                )
             )
 
         output = self._model_runner_output
         output.sampled_token_ids = valid_sampled_token_ids
         output.logprobs = logprobs_lists
         output.token_entropy = entropy_lists
-
-        print("DEBUG token_entropy_cpu =", self.token_entropy_cpu)
-        print("DEBUG entropy_lists =", entropy_lists)
-        print("DEBUG get_output token_entropy =", output.token_entropy)
-
         return output
-
 def _copy_pooler_output_to_cpu(
     raw_pooler_output: PoolerOutput, finished_mask: list[bool]
 ) -> list[torch.Tensor | None]:
@@ -3903,9 +3897,15 @@ class GPUModelRunner(
                 else None,
                 num_nans_in_logits=num_nans_in_logits,
                 cudagraph_stats=cudagraph_stats,
+                token_entropy=None,
             )
 
         if not self.use_async_scheduling:
+            # For sync mode, if you want entropy available immediately,
+            # convert it here from sampler_output.token_entropy.
+            if sampler_output.token_entropy is not None:
+                entropy_lists = sampler_output.token_entropy.tolist()
+                output.token_entropy = entropy_lists
             return output
 
         with record_function_or_nullcontext(
@@ -3920,6 +3920,7 @@ class GPUModelRunner(
                 invalid_req_indices=invalid_req_indices,
                 async_output_copy_stream=self.async_output_copy_stream,
                 vocab_size=self.input_batch.vocab_size,
+                #token_entropy=sampler_output.token_entropy
             )
         with record_function_or_nullcontext(
             "gpu_model_runner: set_async_sampled_token_ids"

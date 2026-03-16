@@ -275,7 +275,7 @@ class RequestState:
         stop_reason: int | str | None,
         kv_transfer_params: dict[str, Any] | None = None,
         routed_experts: np.ndarray | None = None,
-        token_entropy: list[float] | None = None,
+        new_token_entropy: list[float] | None = None,
     ) -> RequestOutput | PoolingRequestOutput | None:
         finished = finish_reason is not None
         final_only = self.output_kind == RequestOutputKind.FINAL_ONLY
@@ -317,7 +317,7 @@ class RequestState:
             )
 
         output = self._new_completion_output(
-            new_token_ids, finish_reason, stop_reason, routed_experts, token_entropy,
+            new_token_ids, finish_reason, stop_reason, routed_experts, new_token_entropy,
         )
 
         if self.parent_req is None:
@@ -381,10 +381,11 @@ class RequestState:
         finish_reason: FinishReason | None,
         stop_reason: int | str | None,
         routed_experts: np.ndarray | None = None,
-        token_entropy: list[float] | None = None,
+        new_token_entropy: list[float] | None = None,
     ) -> CompletionOutput:
         assert self.detokenizer is not None
         assert self.logprobs_processor is not None
+
         finished = finish_reason is not None
         delta = self.output_kind == RequestOutputKind.DELTA
 
@@ -396,13 +397,14 @@ class RequestState:
         if delta and logprobs:
             logprobs = logprobs[-len(token_ids):]
 
-        entropy = token_entropy if delta else self.token_entropy_history
-
-        print(
-            "DEBUG trajectory lens:",
-            "token_ids=", len(token_ids),
-            "entropy=", 0 if entropy is None else len(entropy),
-        )
+        if delta:
+            entropy = (
+                new_token_entropy[: len(token_ids)]
+                if new_token_entropy is not None
+                else None
+            )
+        else:
+            entropy = self.token_entropy_history[: len(token_ids)]
 
         return CompletionOutput(
             index=self.request_index,
@@ -622,15 +624,15 @@ class OutputProcessor:
             )
 
             new_token_ids = engine_core_output.new_token_ids
-            print("DEBUG engine_core_output.token_entropy =", getattr(engine_core_output, "token_entropy", None))
+            #print("DEBUG engine_core_output.token_entropy =", getattr(engine_core_output, "token_entropy", None))
             pooling_output = engine_core_output.pooling_output
             finish_reason = engine_core_output.finish_reason
             stop_reason = engine_core_output.stop_reason
             kv_transfer_params = engine_core_output.kv_transfer_params
             routed_experts = engine_core_output.routed_experts
-            token_entropy = getattr(engine_core_output, "token_entropy", None)
-            if token_entropy:
-                req_state.token_entropy_history.extend(token_entropy)
+            new_token_entropy = getattr(engine_core_output, "new_token_entropy", None)
+            if new_token_entropy is not None:
+                req_state.token_entropy_history.extend(new_token_entropy)
             req_state.num_cached_tokens = engine_core_output.num_cached_tokens
             req_state.is_prefilling = False
 
@@ -657,7 +659,7 @@ class OutputProcessor:
                 stop_reason,
                 kv_transfer_params,
                 routed_experts,
-                token_entropy,
+                new_token_entropy,
             ):
                 if req_state.streaming_input:
                     request_output.finished = False

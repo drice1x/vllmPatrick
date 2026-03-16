@@ -72,80 +72,73 @@ class Sampler(nn.Module):
         logprobs_mode_override: LogprobsMode | None = None,
     ) -> SamplerOutput:
         logprobs_mode = logprobs_mode_override or self.logprobs_mode
-        # NOTE(woosuk): Use the original logits (before any penalties or
-        # temperature scaling) for the top-k logprobs.
-        # This is different from the V0 sampler, which uses the logits that
-        # is used for sampling (after penalties and temperature scaling).
+
         num_logprobs = sampling_metadata.max_num_logprobs
+        raw_logprobs = None
         if num_logprobs is not None:
             if logprobs_mode == "raw_logprobs":
                 raw_logprobs = self.compute_logprobs(logits)
             elif logprobs_mode == "raw_logits":
-                if logits.dtype == torch.float32:
-                    raw_logprobs = logits.clone()
-                else:
-                    raw_logprobs = logits.to(torch.float32)
+                raw_logprobs = logits.clone() if logits.dtype == torch.float32 else logits.to(torch.float32)
 
-        # Use float32 for the logits.
         logits = logits.to(torch.float32)
-
         logits = self.apply_logits_processors(
             logits, sampling_metadata, predict_bonus_token
         )
-        # Sample the next token.
+
         sampled, processed_logprobs, entropies = self.sample(logits, sampling_metadata)
-        print(
-            "DEBUG forward sample return:",
-            type(sampled),
-            None if sampled is None else sampled.shape,
-            None if processed_logprobs is None else processed_logprobs.shape,
-            None if entropies is None else entropies.shape,
-        )
+
         if processed_logprobs is not None:
             raw_logprobs = processed_logprobs
-        # Convert sampled token ids to int64 (long) type to ensure compatibility
-        # with subsequent operations that may use these values as indices.
-        # This conversion is necessary because FlashInfer sampling operations
-        # return int32 (while PyTorch argmax and topk return int64).
 
         sampled = sampled.long()
 
         if num_logprobs is None:
             logprobs_tensors = None
         elif num_logprobs == -1:
-            # Return the full unsorted and unranked logprobs.
+            assert raw_logprobs is not None
             logprobs_tensors = LogprobsTensors(
-                torch.empty(0), raw_logprobs, torch.empty(0)
+                torch.empty(0, device=raw_logprobs.device),
+                raw_logprobs,
+                torch.empty(0, device=raw_logprobs.device),
             )
         else:
-            # Gather the logprobs and ranks of the topk and sampled token.
+            assert raw_logprobs is not None
             logprobs_tensors = self.gather_logprobs(
                 raw_logprobs, num_logprobs, token_ids=sampled
             )
 
-        # Use int32 to reduce the tensor size.
         sampled = sampled.to(torch.int32)
 
-        # These are GPU tensors.
-        sampler_output = SamplerOutput(
-            # The sampled tokens are expanded to 2D tensor with shape
-            # [num_requests, 1], where each row represents one generated
-            # token per request.
+        return SamplerOutput(
             sampled_token_ids=sampled.unsqueeze(-1),
             logprobs_tensors=logprobs_tensors,
             token_entropy=(entropies.unsqueeze(-1) if entropies is not None else None),
         )
-        return sampler_output
-    
+        
     @staticmethod
     def compute_entropy_from_logits(logits: torch.Tensor) -> torch.Tensor:
         """
-        logits: [B, V] float tensor
-        returns: [B] entropy in nats
+        Full-policy entropy from the full vocabulary distribution, before top-k/top-p
+        truncation. This is the quantity you want for the paper-style analysis.
         """
-        logp = logits.log_softmax(dim=-1, dtype=torch.float32)
-        p = logp.exp()
-        return -(p * logp).sum(dim=-1)
+        finite_mask = torch.isfinite(logits)
+        valid_rows = finite_mask.any(dim=-1)
+
+        safe_logits = torch.where(
+            finite_mask,
+            logits,
+            torch.full_like(logits, -1e30),
+        )
+
+        logp = torch.log_softmax(safe_logits, dim=-1, dtype=torch.float32)
+        p = torch.exp(logp)
+
+        term = torch.where(torch.isfinite(logp), p * logp, torch.zeros_like(logp))
+        ent = -term.sum(dim=-1)
+        ent = torch.where(valid_rows, ent, torch.zeros_like(ent))
+        ent = torch.nan_to_num(ent, nan=0.0, posinf=0.0, neginf=0.0)
+        return ent
 
     @staticmethod
     def apply_temperature(
@@ -169,12 +162,10 @@ class Sampler(nn.Module):
         sampling_metadata: SamplingMetadata,
         logprobs_mode_override: LogprobsMode | None = None,
     ) -> tuple[torch.Tensor, torch.Tensor | None, torch.Tensor | None]:
-        """Sample logits based on sampling metadata.
-
-        The various logits processing functions called in this method
-        may update the logits tensor in-place.
         """
-
+        Entropy is computed from the full policy distribution after temperature
+        and argmax-invariant processors, but before top-k/top-p truncation.
+        """
         logprobs_mode = logprobs_mode_override or self.logprobs_mode
         assert not (sampling_metadata.all_greedy and sampling_metadata.all_random)
 
@@ -193,13 +184,10 @@ class Sampler(nn.Module):
 
         assert sampling_metadata.temperature is not None
 
-        # Apply temperature.
         logits = self.apply_temperature(
             logits, sampling_metadata.temperature, sampling_metadata.all_random
         )
 
-        # Apply logits processors that only apply to random sampling
-        # (argmax invariant)
         for processor in sampling_metadata.logitsprocs.argmax_invariant:
             logits = processor.apply(logits)
 
@@ -207,7 +195,6 @@ class Sampler(nn.Module):
         if getattr(sampling_metadata, "return_entropy", False):
             entropies = self.compute_entropy_from_logits(logits)
 
-        # Apply top_k and/or top_p.
         random_sampled, processed_logprobs = self.topk_topp_sampler(
             logits,
             sampling_metadata.generators,
@@ -215,7 +202,6 @@ class Sampler(nn.Module):
             sampling_metadata.top_p,
         )
 
-        # Safety check
         if random_sampled is None:
             raise RuntimeError(
                 "topk_topp_sampler returned None for random_sampled. "

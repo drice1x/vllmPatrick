@@ -1,0 +1,58 @@
+{
+  "64": {
+    "n": 500,
+    "accuracy": 0.022,
+    "mean_reasoning_entropy": 0.11070057565076254,
+    "mean_thinking_token_count": 64,
+    "mean_total_tokens_observed": 520.876,
+    "mean_wait_insertions_actual": 0
+  },
+  "128": {
+    "n": 500,
+    "accuracy": 0.022,
+    "mean_reasoning_entropy": 0.11108445362293279,
+    "mean_thinking_token_count": 128,
+    "mean_total_tokens_observed": 517.134,
+    "mean_wait_insertions_actual": 0.002
+  },
+  "256": {
+    "n": 500,
+    "accuracy": 0.014,
+    "mean_reasoning_entropy": 0.1167608134732264,
+    "mean_thinking_token_count": 256,
+    "mean_total_tokens_observed": 546.072,
+    "mean_wait_insertions_actual": 0.072
+  },
+  "512": {
+    "n": 500,
+    "accuracy": 0.032,
+    "mean_reasoning_entropy": 0.15651094434371995,
+    "mean_thinking_token_count": 512,
+    "mean_total_tokens_observed": 967.954,
+    "mean_wait_insertions_actual": 0.746
+  },
+  "1024": {
+    "n": 500,
+    "accuracy": 0.022,
+    "mean_reasoning_entropy": 0.17811779015001342,
+    "mean_thinking_token_count": 1024,
+    "mean_total_tokens_observed": 1411.63,
+    "mean_wait_insertions_actual": 1.596
+  },
+  "2048": {
+    "n": 500,
+    "accuracy": 0.024,
+    "mean_reasoning_entropy": 0.19356553893804662,
+    "mean_thinking_token_count": 2048,
+    "mean_total_tokens_observed": 2479.282,
+    "mean_wait_insertions_actual": 3.444
+  },
+  "4096": {
+    "n": 500,
+    "accuracy": 0.02,
+    "mean_reasoning_entropy": 0.20345377592767644,
+    "mean_thinking_token_count": 4096,
+    "mean_total_tokens_observed": 4512.934,
+    "mean_wait_insertions_actual": 7.214
+  }
+}

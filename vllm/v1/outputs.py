@@ -120,7 +120,7 @@ class SamplerOutput:
     sampled_token_ids: torch.Tensor
     logprobs_tensors: LogprobsTensors | None
     # NEW: [num_reqs, max_num_generated_tokens] float32, padded with 0 (or any)
-    token_entropy: torch.Tensor | None = None
+    token_entropy: list[list[float]] | None = None
 
 
 T = TypeVar("T")

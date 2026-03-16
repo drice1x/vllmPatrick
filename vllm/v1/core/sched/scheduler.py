@@ -1418,6 +1418,9 @@ class Scheduler(SchedulerInterface):
                 or kv_transfer_params
                 or stopped
             ):
+                new_token_entropy = None
+                if model_runner_output.token_entropy is not None:
+                    new_token_entropy = model_runner_output.token_entropy[req_index]
                 # Add EngineCoreOutput for this Request.
                 outputs[request.client_index].append(
                     EngineCoreOutput(
@@ -1426,7 +1429,7 @@ class Scheduler(SchedulerInterface):
                         finish_reason=finish_reason,
                         new_logprobs=new_logprobs,
                         new_prompt_logprobs_tensors=prompt_logprobs_tensors,
-                        token_entropy=new_token_entropy,
+                        new_token_entropy=new_token_entropy,
                         pooling_output=pooler_output,
                         stop_reason=request.stop_reason,
                         events=request.take_events(),
@@ -1436,6 +1439,7 @@ class Scheduler(SchedulerInterface):
                         num_external_computed_tokens=request.num_external_computed_tokens,
                         routed_experts=routed_experts,
                         num_nans_in_logits=request.num_nans_in_logits,
+                        #token_entropy=token_entropy
                     )
                 )
             else:
