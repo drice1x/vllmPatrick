@@ -407,6 +407,9 @@ class OpenAIServingChat(OpenAIServing):
                         self.default_sampling_params,
                     )
 
+                monitor_config = request.monitor or {}
+                sampling_params.monitor_config = monitor_config
+
                 self._log_inputs(
                     sub_request_id,
                     engine_prompt,
@@ -640,6 +643,8 @@ class OpenAIServingChat(OpenAIServing):
         chunk_object_type: Final = "chat.completion.chunk"
         first_iteration = True
 
+        print("ENTDBG serving.enter stream_generator")
+
         # Send response for each token for each request.n (index)
         num_choices = 1 if request.n is None else request.n
         previous_num_tokens = [0] * num_choices
@@ -713,6 +718,13 @@ class OpenAIServingChat(OpenAIServing):
 
         try:
             async for res in result_generator:
+                res_monitor_outputs = getattr(res, "monitor_outputs", None)
+                print(
+                    "MONDBG serving.stream got res:",
+                    "request_id=", getattr(res, "request_id", None),
+                    "monitor_outputs=", getattr(res, "monitor_outputs", None),
+                    "num_outputs=", len(res.outputs),
+                )
                 if res.prompt_token_ids is not None:
                     num_prompt_tokens = len(res.prompt_token_ids)
                     if res.encoder_prompt_token_ids is not None:
@@ -753,6 +765,16 @@ class OpenAIServingChat(OpenAIServing):
                                 else None
                             ),
                         )
+
+                        print(
+                            "ENTDBG res_monitor_outputs before use:",
+                            "res_monitor_ouputs serving.py =", res_monitor_outputs
+                            
+                        )
+
+
+                        if res_monitor_outputs is not None:
+                            chunk.monitor = res_monitor_outputs
 
                         # if continuous usage stats are requested, add it
                         if include_continuous_usage:
@@ -804,6 +826,12 @@ class OpenAIServingChat(OpenAIServing):
 
                 for output in res.outputs:
                     print("DEBUG output.token_entropy =", getattr(output, "token_entropy", None))
+                    print(
+                        "MONDBG serving.stream output:",
+                        "index=", output.index,
+                        "monitor_delta=", getattr(output, "monitor_delta", None),
+                        "token_entropy_len=", None if getattr(output, "token_entropy", None) is None else len(output.token_entropy),
+                    )
                     i = output.index
                     tool_parser = tool_parsers[i]
 
@@ -1210,6 +1238,10 @@ class OpenAIServingChat(OpenAIServing):
                                 else None
                             ),
                         )
+                        # --- NEW: attach per-step monitoring delta if available ---
+                        if hasattr(output, "monitor_delta"):
+                            choice_data.monitor_delta = output.monitor_delta
+
 
                     # if the model is finished generating
                     else:
@@ -1421,6 +1453,22 @@ class OpenAIServingChat(OpenAIServing):
             return self.create_error_response(e)
 
         assert final_res is not None
+        print("ENTDBG serving.enter full_generator")
+        print(
+                "ENTDBG monitoring before use:",
+                "has_monitor_outputs_local=", "monitor_outputs" in locals(),
+                "monitor_outputs=", locals().get("monitor_outputs", None),
+            )
+        final_monitor_outputs = getattr(final_res, "monitor_outputs", None)
+
+        print(
+            "MONDBG serving.full final_res:",
+            "request_id=", getattr(final_res, "request_id", None),
+            "final_monitor_outputs=", final_monitor_outputs,
+            "num_outputs=", len(final_res.outputs),
+        )
+        
+        
 
         choices: list[ChatCompletionResponseChoice] = []
         if self.tool_call_id_type == "kimi_k2":
@@ -1758,6 +1806,11 @@ class OpenAIServingChat(OpenAIServing):
             ),
             kv_transfer_params=final_res.kv_transfer_params,
         )
+
+        if final_monitor_outputs is not None:
+            response.monitor = final_monitor_outputs
+        if final_monitor_outputs:
+            response.monitor = final_monitor_outputs.get(request_id, final_monitor_outputs)
 
         # Log complete response if output logging is enabled
         if self.enable_log_outputs and self.request_logger:

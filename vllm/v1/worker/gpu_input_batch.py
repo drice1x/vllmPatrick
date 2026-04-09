@@ -843,7 +843,11 @@ class InputBatch:
 
         print("DEBUG _make_sampling_metadata return_entropy_reqs =", self.return_entropy_reqs)
         print("DEBUG _make_sampling_metadata return_entropy =", len(self.return_entropy_reqs) > 0)
-
+        print(
+                "ENTDBG make_sampling_metadata:",
+                "num_reqs=", self.num_reqs,
+                "return_entropy_reqs=", getattr(self, "return_entropy_reqs", None),
+            )
         return SamplingMetadata(
             temperature=temperature,
             all_greedy=self.all_greedy,

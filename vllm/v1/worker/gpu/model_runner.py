@@ -92,6 +92,11 @@ from vllm.v1.worker.gpu.states import RequestState
 from vllm.v1.worker.gpu.structured_outputs import StructuredOutputsWorker
 from vllm.v1.worker.lora_model_runner_mixin import LoRAModelRunnerMixin
 
+
+from vllm.monitoring.factory import build_monitor_runtime
+
+from vllm.monitoring.default_config import DEFAULT_MONITOR_CONFIG
+
 logger = init_logger(__name__)
 
 
@@ -154,6 +159,24 @@ class GPUModelRunner(LoRAModelRunnerMixin):
         self.speculator = None
         self.num_speculative_steps = 0
         self.use_aux_hidden_state_outputs = False
+
+
+
+        # --- NEW: activation monitoring runtime/state ---
+        self.monitor_runtime = None
+        self.monitor_enabled = False
+        self.monitor_layers: tuple[int, ...] = tuple()
+
+        monitor_cfg = DEFAULT_MONITOR_CONFIG
+        self.monitor_config = monitor_cfg
+
+        if monitor_cfg["enabled"]:
+            self.monitor_enabled = True
+            self.monitor_layers = tuple(sorted(set(int(x) for x in monitor_cfg["layers"])))
+            self.use_aux_hidden_state_outputs = True
+
+
+
         if self.speculative_config is not None:
             self.num_speculative_steps = self.speculative_config.num_speculative_tokens
             if self.is_last_pp_rank:
@@ -242,9 +265,32 @@ class GPUModelRunner(LoRAModelRunnerMixin):
                     self.model, self.vllm_config, self.device
                 )
 
+            # --- NEW: configure exact auxiliary hidden-state layers ---
+            if self.monitor_enabled:
+                if hasattr(self.model, "set_aux_hidden_state_layers"):
+                    self.model.set_aux_hidden_state_layers(self.monitor_layers)
+                else:
+                    raise RuntimeError(
+                        "Model does not support set_aux_hidden_state_layers(), "
+                        "but monitor_config.enabled=True was requested."
+                    )
+
+
             if self.use_aux_hidden_state_outputs:
                 assert self.speculative_config is not None
                 set_eagle3_aux_hidden_state_layers(self.model, self.speculative_config)
+
+            # --- NEW: initialize the monitoring runtime after model is ready ---
+            if self.monitor_enabled:
+                #self.monitor_runtime = build_monitor_runtime(
+                #    monitor_config=getattr(self.vllm_config, "monitor_config", None),
+                #    device=self.device,
+                #)
+                self.monitor_runtime = build_monitor_runtime(
+                    monitor_config=self.monitor_config,
+                    device=self.device,
+                )
+
             if self.speculator is not None:
                 self.speculator.load_model(self.model)
         time_after_load = time.perf_counter()
@@ -266,6 +312,36 @@ class GPUModelRunner(LoRAModelRunnerMixin):
         )
         if self.is_pooling_model:
             self.pooling_runner = PoolingRunner(self.model)
+
+
+    def _slice_sampled_aux_hidden_states(
+        self,
+        aux_hidden_states: list[torch.Tensor] | None,
+        input_batch: InputBatch,
+    ) -> dict[int, torch.Tensor]:
+        """
+        Map auxiliary hidden-state tensors to the requested monitor layer ids and
+        slice them down to the sampled-token positions for this decode step.
+
+        Assumes:
+        - aux_hidden_states are returned in the same sorted order as self.monitor_layers
+        - each aux tensor has shape [num_scheduled_tokens, hidden_dim]
+        - input_batch.logits_indices selects the rows corresponding to sampled outputs
+        """
+        if aux_hidden_states is None or len(aux_hidden_states) == 0:
+            return {}
+
+        if len(aux_hidden_states) != len(self.monitor_layers):
+            raise RuntimeError(
+                f"Mismatch between aux_hidden_states ({len(aux_hidden_states)}) "
+                f"and monitor_layers ({len(self.monitor_layers)})."
+            )
+
+        sampled_by_layer: dict[int, torch.Tensor] = {}
+        for layer_id, hs in zip(self.monitor_layers, aux_hidden_states):
+            sampled_by_layer[layer_id] = hs[input_batch.logits_indices]
+        return sampled_by_layer
+
 
     def get_model(self) -> nn.Module:
         return self.model
@@ -752,6 +828,7 @@ class GPUModelRunner(LoRAModelRunnerMixin):
         hidden_states: torch.Tensor,
         input_batch: InputBatch,
         grammar_output: GrammarOutput | None,
+        aux_hidden_states: list[torch.Tensor] | None = None,
     ) -> tuple[SamplerOutput, torch.Tensor, torch.Tensor]:
         sample_hidden_states = hidden_states[input_batch.logits_indices]
         sample_pos = input_batch.positions[input_batch.logits_indices]
@@ -799,7 +876,39 @@ class GPUModelRunner(LoRAModelRunnerMixin):
             input_batch.idx_mapping,
             self.req_states.prefill_len.gpu,
         )
-        return sampler_output, num_sampled, num_rejected
+
+        monitor_outputs: dict[str, dict] = {}
+
+        # Real exact-layer monitoring path
+        if (
+            self.monitor_enabled
+            and self.monitor_runtime is not None
+            and input_batch.num_draft_tokens == 0
+        ):
+            sample_hidden_states_by_layer = self._slice_sampled_aux_hidden_states(
+                aux_hidden_states,
+                input_batch,
+            )
+            print("DEBUG monitor_enabled =", self.monitor_enabled)
+            print("DEBUG monitor_runtime is None =", self.monitor_runtime is None)
+            print("DEBUG aux_hidden_states is None =", aux_hidden_states is None)
+            print("DEBUG monitor_layers =", self.monitor_layers)
+
+            sample_hidden_states_by_layer = self._slice_sampled_aux_hidden_states(
+                aux_hidden_states,
+                input_batch,
+            )
+            print("DEBUG sample_hidden_states_by_layer keys =", list(sample_hidden_states_by_layer.keys()))
+            for k, v in sample_hidden_states_by_layer.items():
+                print("DEBUG layer", k, "shape", tuple(v.shape))
+            monitor_outputs = self.monitor_runtime.score_decode_step(
+                req_ids=input_batch.req_ids,
+                sample_hidden_states_by_layer=sample_hidden_states_by_layer,
+                sampled_token_ids=sampler_output.sampled_token_ids,
+            )
+            print("DEBUG monitor_outputs in sample_tokens =", monitor_outputs)
+
+        return sampler_output, num_sampled, num_rejected, monitor_outputs
 
     def postprocess(
         self,
@@ -1012,6 +1121,7 @@ class GPUModelRunner(LoRAModelRunnerMixin):
         if self.execute_model_state is None:
             # The prior execute_model call must have failed.
             return None
+
         (
             input_batch,
             model_inputs,
@@ -1035,9 +1145,112 @@ class GPUModelRunner(LoRAModelRunnerMixin):
             return None
 
         # Last rank: sample tokens
-        sampler_output, num_sampled, num_rejected = self.sample(
-            hidden_states, input_batch, grammar_output
+        sampler_output, num_sampled, num_rejected, monitor_outputs = self.sample(
+            hidden_states,
+            input_batch,
+            grammar_output,
+            aux_hidden_states=aux_hidden_states,
         )
+
+        print("DEBUG monitor_outputs in sample_tokens =", monitor_outputs)
+
+        if self.use_pp:
+            # Broadcast to non-last PP ranks (handles spec decode multi-token).
+            pp_broadcast(sampler_output.sampled_token_ids, num_sampled, num_rejected)
+
+        prompt_logprobs_dict = self.prompt_logprobs_worker.compute_prompt_logprobs(
+            self.model.compute_logits,
+            hidden_states,
+            input_batch,
+            self.req_states.all_token_ids.gpu,
+            self.req_states.num_computed_tokens.gpu,
+            self.req_states.prompt_len.np,
+            self.req_states.prefill_len.np,
+            self.req_states.num_computed_prefill_tokens,
+        )
+
+        # Prepare the model runner output.
+        model_runner_output = ModelRunnerOutput(
+            req_ids=input_batch.req_ids,
+            req_id_to_index={req_id: i for i, req_id in enumerate(input_batch.req_ids)},
+            sampled_token_ids=None,  # type: ignore
+            prompt_logprobs_dict=prompt_logprobs_dict,  # type: ignore[arg-type]
+            kv_connector_output=kv_connector_output,
+            monitor_outputs=monitor_outputs,
+        )
+
+        async_output = AsyncOutput(
+            model_runner_output=model_runner_output,
+            sampler_output=sampler_output,
+            num_sampled_tokens=num_sampled,
+            main_stream=self.main_stream,
+            copy_stream=self.output_copy_stream,
+            copy_event=self.output_copy_event,
+        )
+
+        # Postprocess results and update request states.
+        self.postprocess(
+            input_batch, sampler_output.sampled_token_ids, num_sampled, num_rejected
+        )
+
+        if self.speculator is not None:
+            draft_tokens = self.speculator.propose(
+                input_batch,
+                attn_metadata,
+                slot_mappings_by_layer,
+                hidden_states,
+                aux_hidden_states,
+                num_sampled,
+                num_rejected,
+                self.req_states.last_sampled_tokens,
+                self.req_states.next_prefill_tokens,
+                self.sampler.sampling_states.temperature.gpu,
+                self.sampler.sampling_states.seeds.gpu,
+                num_tokens_across_dp=num_tokens_across_dp,
+            )
+            self.req_states.draft_tokens[input_batch.idx_mapping] = draft_tokens
+            self.draft_tokens_handler.set_draft_tokens(input_batch, draft_tokens)
+
+        if self.use_async_scheduling:
+            return async_output
+        return async_output.get_output()
+
+    @torch.inference_mode()
+    def sample_tokensOLD(
+        self, grammar_output: GrammarOutput | None
+    ) -> AsyncOutput | ModelRunnerOutput | None:
+        if self.execute_model_state is None:
+            # The prior execute_model call must have failed.
+            return None
+        (
+            input_batch,
+            model_inputs,
+            attn_metadata,
+            slot_mappings_by_layer,
+            hidden_states,
+            aux_hidden_states,
+            kv_connector_output,
+            num_tokens_across_dp,
+        ) = self.execute_model_state
+        self.execute_model_state = None
+
+        if not self.is_last_pp_rank:
+            # Non-last PP rank: hidden_states is None because this rank produced
+            # IntermediateTensors instead of final hidden states. Receive the
+            # sampled tokens broadcast from the last rank and update local state.
+            sampled, num_sampled, num_rejected = pp_receive(
+                input_batch.num_reqs, max_sample_len=self.num_speculative_steps + 1
+            )
+            self.postprocess(input_batch, sampled, num_sampled, num_rejected)
+            return None
+
+        # Last rank: sample tokens
+        sampler_output, num_sampled, num_rejected, monitor_outputs = self.sample(
+            hidden_states, input_batch, grammar_output, aux_hidden_states=aux_hidden_states,
+        )
+        print("DEBUG sample_tokens sampler_output.token_entropy =", sampler_output.token_entropy)
+        print("DEBUG monitor_outputs in sample_tokens =", monitor_outputs)
+
 
         if self.use_pp:
             # Broadcast to non-last PP ranks (handles spec decode multi-token).
@@ -1063,6 +1276,7 @@ class GPUModelRunner(LoRAModelRunnerMixin):
             sampled_token_ids=None,  # type: ignore
             prompt_logprobs_dict=prompt_logprobs_dict,  # type: ignore[arg-type]
             kv_connector_output=kv_connector_output,
+            monitor_outputs=monitor_outputs
         )
         async_output = AsyncOutput(
             model_runner_output=model_runner_output,

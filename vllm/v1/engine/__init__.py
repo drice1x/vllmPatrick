@@ -162,6 +162,9 @@ class EngineCoreOutput(
     new_prompt_logprobs_tensors: LogprobsTensors | None = None
     new_token_entropy: list[float] | None = None
 
+    monitor_outputs: dict[str, Any] | None = None
+    monitor_delta: dict[str, Any] | None = None
+
     pooling_output: torch.Tensor | None = None
 
     finish_reason: FinishReason | None = None

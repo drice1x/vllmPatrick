@@ -185,6 +185,9 @@ class RequestState:
             deque() if stream_input else None
         )
         
+        self.monitor_history: list[dict[str, Any]] = []
+        self.latest_monitor_delta: dict[str, Any] | None = None
+        
 
     def apply_streaming_update(self, update: StreamingUpdate) -> None:
         # Apply the update to the request state.
@@ -276,6 +279,8 @@ class RequestState:
         kv_transfer_params: dict[str, Any] | None = None,
         routed_experts: np.ndarray | None = None,
         new_token_entropy: list[float] | None = None,
+        monitor_delta: dict[str, Any] | None = None,
+        monitor_outputs: dict[str, Any] | None = None,
     ) -> RequestOutput | PoolingRequestOutput | None:
         finished = finish_reason is not None
         final_only = self.output_kind == RequestOutputKind.FINAL_ONLY
@@ -316,8 +321,17 @@ class RequestState:
                 finished,
             )
 
+        print(
+            "MONDBG RequestState.make_request_output:",
+            "external_req_id=", self.external_req_id,
+            "new_token_ids_len=", len(new_token_ids),
+            "new_token_entropy=", new_token_entropy,
+            "monitor_delta=", monitor_delta,
+            "monitor_outputs=", monitor_outputs,
+        )
+
         output = self._new_completion_output(
-            new_token_ids, finish_reason, stop_reason, routed_experts, new_token_entropy,
+            new_token_ids, finish_reason, stop_reason, routed_experts, new_token_entropy, monitor_delta
         )
 
         if self.parent_req is None:
@@ -362,6 +376,13 @@ class RequestState:
         else:
             prompt_logprobs = self.logprobs_processor.prompt_logprobs
 
+        print(
+            "MONDBG RequestState._new_request_output:",
+            "external_req_id=", external_req_id,
+            "monitor_history_len=", len(self.monitor_history),
+            "latest_monitor_delta=", self.latest_monitor_delta,
+        )
+
         return RequestOutput(
             request_id=external_req_id,  # request_id is what was provided externally
             lora_request=self.lora_request,
@@ -373,6 +394,11 @@ class RequestState:
             kv_transfer_params=kv_transfer_params,
             num_cached_tokens=self.num_cached_tokens,
             metrics=self.stats,
+            monitor_outputs={
+                "request_id": external_req_id,
+                "history": self.monitor_history,
+                "latest": self.latest_monitor_delta,
+                },
         )
 
     def _new_completion_output(
@@ -382,6 +408,7 @@ class RequestState:
         stop_reason: int | str | None,
         routed_experts: np.ndarray | None = None,
         new_token_entropy: list[float] | None = None,
+        monitor_delta: dict[str, Any] | None = None,
     ) -> CompletionOutput:
         assert self.detokenizer is not None
         assert self.logprobs_processor is not None
@@ -416,6 +443,7 @@ class RequestState:
             finish_reason=str(finish_reason) if finished else None,
             stop_reason=stop_reason if finished else None,
             token_entropy=entropy,
+            monitor_delta=monitor_delta
         )
         
     def _new_pooling_output(self, pooling_output: torch.Tensor) -> PoolingOutput:
@@ -541,6 +569,12 @@ class OutputProcessor:
             log_stats=self.log_stats,
             stream_interval=self.stream_interval,
         )
+        #req_output.monitor_outputs = {
+        #    "request_id": external_req_id,
+        #    "history": self.monitor_history,
+        #    "latest": self.latest_monitor_delta,
+        #}
+
         self.request_states[request_id] = req_state
         if parent_req:
             self.parent_requests[parent_req.request_id] = parent_req
@@ -624,7 +658,14 @@ class OutputProcessor:
             )
 
             new_token_ids = engine_core_output.new_token_ids
-            #print("DEBUG engine_core_output.token_entropy =", getattr(engine_core_output, "token_entropy", None))
+            print("DEBUG engine_core_output.token_entropy =", getattr(engine_core_output, "token_entropy", None))
+            print(
+                    "MONDBG output_processor incoming:",
+                    "req_id=", req_id,
+                    "new_token_entropy=", getattr(engine_core_output, "new_token_entropy", None),
+                    "monitor_outputs=", getattr(engine_core_output, "monitor_outputs", None),
+                    "monitor_delta=", getattr(engine_core_output, "monitor_delta", None),
+                )
             pooling_output = engine_core_output.pooling_output
             finish_reason = engine_core_output.finish_reason
             stop_reason = engine_core_output.stop_reason
@@ -635,6 +676,20 @@ class OutputProcessor:
                 req_state.token_entropy_history.extend(new_token_entropy)
             req_state.num_cached_tokens = engine_core_output.num_cached_tokens
             req_state.is_prefilling = False
+
+            monitor_outputs = getattr(engine_core_output, "monitor_outputs", None)
+            monitor_delta = getattr(engine_core_output, "monitor_delta", None)
+
+            print(
+                "MONDBG output_processor resolved:",
+                "req_id=", req_id,
+                "monitor_delta=", monitor_delta,
+            )
+
+            if monitor_delta is not None:
+                req_state.latest_monitor_delta = monitor_delta
+                req_state.monitor_history.append(monitor_delta)
+
 
             if pooling_output is None:
                 assert req_state.detokenizer is not None
@@ -660,6 +715,8 @@ class OutputProcessor:
                 kv_transfer_params,
                 routed_experts,
                 new_token_entropy,
+                monitor_delta,
+                monitor_outputs,
             ):
                 if req_state.streaming_input:
                     request_output.finished = False
@@ -670,6 +727,11 @@ class OutputProcessor:
                 else:
                     # LLMEngine: return list of RequestOutputs.
                     request_outputs.append(request_output)
+            #request_output.monitor_outputs = {
+            #    "request_id": external_req_id,
+            #    "history": self.monitor_history,
+            #    "latest": self.latest_monitor_delta,
+            #}
 
             # Free completed requests.
             if finish_reason is not None:

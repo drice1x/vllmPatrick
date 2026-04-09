@@ -180,9 +180,22 @@ class Sampler(nn.Module):
                         processed_logprobs = logits
                     elif logprobs_mode == "processed_logprobs":
                         processed_logprobs = self.compute_logprobs(logits)
-                return greedy_sampled, processed_logprobs, None
+
+                entropies = None
+                if getattr(sampling_metadata, "return_entropy", False):
+                    entropies = self.compute_entropy_from_logits(logits)
+
+                return greedy_sampled, processed_logprobs, entropies
 
         assert sampling_metadata.temperature is not None
+
+        print(
+            "ENTDBG sampler.sample.enter:",
+            "return_entropy=", getattr(sampling_metadata, "return_entropy", None),
+            "all_greedy=", sampling_metadata.all_greedy,
+            "all_random=", sampling_metadata.all_random,
+            "logits_shape=", tuple(logits.shape),
+        )
 
         logits = self.apply_temperature(
             logits, sampling_metadata.temperature, sampling_metadata.all_random

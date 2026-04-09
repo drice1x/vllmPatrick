@@ -1264,6 +1264,7 @@ class Scheduler(SchedulerInterface):
         scheduler_output: SchedulerOutput,
         model_runner_output: ModelRunnerOutput,
     ) -> dict[int, EngineCoreOutputs]:
+        print("MONDBG entered scheduler.update_from_output")
         sampled_token_ids = model_runner_output.sampled_token_ids
         logprobs = model_runner_output.logprobs
         prompt_logprobs_dict = model_runner_output.prompt_logprobs_dict
@@ -1273,7 +1274,13 @@ class Scheduler(SchedulerInterface):
         kv_connector_output = model_runner_output.kv_connector_output
         cudagraph_stats = model_runner_output.cudagraph_stats
         token_entropy = model_runner_output.token_entropy
-
+        monitor_outputs = model_runner_output.monitor_outputs
+        print(
+            "MONDBG scheduler.update_from_output start:",
+            "has_monitor_outputs=", monitor_outputs is not None,
+            "monitor_output_keys=", None if monitor_outputs is None else list(monitor_outputs.keys()),
+            "has_token_entropy=", model_runner_output.token_entropy is not None,
+        )
         perf_stats: PerfStats | None = None
         if self.perf_metrics and self.perf_metrics.is_enabled():
             perf_stats = self.perf_metrics.get_step_perf_stats_per_gpu(scheduler_output)
@@ -1362,6 +1369,8 @@ class Scheduler(SchedulerInterface):
                 new_token_ids, stopped = self._update_request_with_output(
                     request, new_token_ids
                 )
+
+
             elif request.pooling_params and pooler_output is not None:
                 # Pooling stops as soon as there is output.
                 request.status = RequestStatus.FINISHED_STOPPED
@@ -1422,6 +1431,18 @@ class Scheduler(SchedulerInterface):
                 if model_runner_output.token_entropy is not None:
                     new_token_entropy = model_runner_output.token_entropy[req_index]
                 # Add EngineCoreOutput for this Request.
+                monitor_delta = None
+                if monitor_outputs is not None:
+                    monitor_delta = monitor_outputs.get(req_id)
+
+                print(
+                    "MONDBG scheduler per-req:",
+                    "req_id=", req_id,
+                    "req_index=", req_index,
+                    "new_token_ids_len=", len(new_token_ids),
+                    "new_token_entropy=", new_token_entropy,
+                    "monitor_delta=", monitor_delta,
+                )
                 outputs[request.client_index].append(
                     EngineCoreOutput(
                         request_id=req_id,
@@ -1439,7 +1460,8 @@ class Scheduler(SchedulerInterface):
                         num_external_computed_tokens=request.num_external_computed_tokens,
                         routed_experts=routed_experts,
                         num_nans_in_logits=request.num_nans_in_logits,
-                        #token_entropy=token_entropy
+                        monitor_outputs = monitor_outputs,
+                        monitor_delta = monitor_delta,
                     )
                 )
             else:

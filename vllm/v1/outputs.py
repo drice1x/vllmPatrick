@@ -4,7 +4,7 @@
 from abc import ABC, abstractmethod
 from collections.abc import Callable
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, NamedTuple, TypeAlias, TypeVar
+from typing import TYPE_CHECKING, NamedTuple, TypeAlias, TypeVar, Any
 
 import numpy as np
 import torch
@@ -251,6 +251,8 @@ class ModelRunnerOutput:
     
     # NEW: num_reqs x num_generated_tokens (variable length per req)
     token_entropy: list[list[float]] | None = None
+
+    monitor_outputs: dict[str, dict[str, Any]] = field(default_factory=dict)
 
 # ModelRunnerOutput wrapper for async scheduling.
 class AsyncModelRunnerOutput(ABC):

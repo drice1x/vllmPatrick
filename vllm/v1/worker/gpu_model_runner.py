@@ -197,12 +197,16 @@ if TYPE_CHECKING:
     from vllm.v1.core.sched.output import GrammarOutput, SchedulerOutput
     from vllm.v1.spec_decode.ngram_proposer import NgramProposer
 
+from typing import Any
+from vllm.monitoring.factory import  build_monitor_runtime
+from vllm.monitoring.default_config import DEFAULT_MONITOR_CONFIG
+
+
 logger = init_logger(__name__)
 
 AttnMetadataDict: TypeAlias = dict[str, AttentionMetadata]
 # list when ubatching is enabled
 PerLayerAttnMetadata: TypeAlias = list[AttnMetadataDict] | AttnMetadataDict
-
 
 # Wrapper for ModelRunnerOutput to support overlapped execution.
 class AsyncGPUModelRunnerOutput(AsyncModelRunnerOutput):
@@ -211,14 +215,21 @@ class AsyncGPUModelRunnerOutput(AsyncModelRunnerOutput):
         model_runner_output: ModelRunnerOutput,
         sampled_token_ids: torch.Tensor,
         logprobs_tensors: LogprobsTensors | None,
-        token_entropy: torch.Tensor | None,
+        token_entropy: torch.Tensor | list[list[float]] | list[float] | None,
         invalid_req_indices: list[int],
         async_output_copy_stream: torch.cuda.Stream,
         vocab_size: int,
+        #monitor_outputs: dict[str, dict[str, Any]] | None = None,
     ):
         self._model_runner_output = model_runner_output
         self._invalid_req_indices = invalid_req_indices
+        #self._monitor_outputs = monitor_outputs or {}
+        self._monitor_outputs = getattr(model_runner_output, "monitor_outputs", {}) or {}
 
+        print(
+            "MONDBG AsyncGPUModelRunnerOutput.__init__:",
+            "monitor_outputs_keys=", list(self._monitor_outputs.keys()) if isinstance(self._monitor_outputs, dict) else self._monitor_outputs,
+        )
         self.async_copy_ready_event = torch.Event()
 
         self._sampled_token_ids = sampled_token_ids
@@ -240,11 +251,15 @@ class AsyncGPUModelRunnerOutput(AsyncModelRunnerOutput):
                 else None
             )
 
-            self.token_entropy_cpu = (
-                self._token_entropy.to("cpu", non_blocking=True)
-                if self._token_entropy is not None
-                else None
-            )
+            # Handle both tensor and already-materialized python-list entropy
+            if isinstance(self._token_entropy, torch.Tensor):
+                self.token_entropy_cpu = self._token_entropy.to(
+                    "cpu", non_blocking=True
+                )
+                self.token_entropy_list = None
+            else:
+                self.token_entropy_cpu = None
+                self.token_entropy_list = self._token_entropy
 
             self.async_copy_ready_event.record()
 
@@ -272,24 +287,55 @@ class AsyncGPUModelRunnerOutput(AsyncModelRunnerOutput):
                 entropy_lists = [
                     x if isinstance(x, list) else [x] for x in entropy_lists
                 ]
+            elif self.token_entropy_list is not None:
+                entropy_lists = self.token_entropy_list
+                entropy_lists = [
+                    x if isinstance(x, list) else [x] for x in entropy_lists
+                ]
+
+            if entropy_lists is not None:
                 for i in self._invalid_req_indices:
                     entropy_lists[i].clear()
+
         else:
-            valid_sampled_token_ids, logprobs_lists, entropy_lists = (
-                RejectionSampler.parse_output(
-                    self.sampled_token_ids_cpu,
-                    self.vocab_size,
-                    self._invalid_req_indices,
-                    logprobs_tensors=self._logprobs_tensors_cpu,
-                    token_entropy=self.token_entropy_cpu,
+            if self.token_entropy_cpu is not None:
+                valid_sampled_token_ids, logprobs_lists, entropy_lists = (
+                    RejectionSampler.parse_output(
+                        self.sampled_token_ids_cpu,
+                        self.vocab_size,
+                        self._invalid_req_indices,
+                        logprobs_tensors=self._logprobs_tensors_cpu,
+                        token_entropy=self.token_entropy_cpu,
+                    )
                 )
-            )
+            else:
+                valid_sampled_token_ids, logprobs_lists, _ = (
+                    RejectionSampler.parse_output(
+                        self.sampled_token_ids_cpu,
+                        self.vocab_size,
+                        self._invalid_req_indices,
+                        logprobs_tensors=self._logprobs_tensors_cpu,
+                        token_entropy=None,
+                    )
+                )
+                entropy_lists = self.token_entropy_list
 
         output = self._model_runner_output
         output.sampled_token_ids = valid_sampled_token_ids
         output.logprobs = logprobs_lists
         output.token_entropy = entropy_lists
+
+
+        print(
+            "MONDBG AsyncGPUModelRunnerOutput.get_output before return:",
+            "entropy_lists_present=", entropy_lists is not None,
+            "monitor_outputs_keys=", list(self._monitor_outputs.keys()) if isinstance(self._monitor_outputs, dict) else self._monitor_outputs,
+        )
+        output.monitor_outputs = self._monitor_outputs
+
         return output
+# Wrapper for ModelRunnerOutput to support overlapped execution.
+
 def _copy_pooler_output_to_cpu(
     raw_pooler_output: PoolerOutput, finished_mask: list[bool]
 ) -> list[torch.Tensor | None]:
@@ -476,6 +522,31 @@ class GPUModelRunner(
 
         # Sampler
         self.sampler = Sampler(logprobs_mode=self.model_config.logprobs_mode)
+
+        self.monitor_runtime = None
+        self.monitor_layers: tuple[int, ...] = tuple()
+
+        raw_monitor_cfg = getattr(self.vllm_config, "monitor_config", None)
+        if raw_monitor_cfg is None:
+            self.monitor_cfg = dict(DEFAULT_MONITOR_CONFIG)
+        else:
+            self.monitor_cfg = dict(raw_monitor_cfg)
+
+        self.monitor_enabled = bool(self.monitor_cfg.get("enabled", False))
+
+        if self.monitor_enabled:
+            self.monitor_layers = tuple(
+                sorted(set(int(x) for x in self.monitor_cfg.get("layers", [])))
+            )
+            self.monitor_runtime = None
+
+        print(
+            "MONDBG init monitor flags:",
+            "monitor_enabled=", self.monitor_enabled,
+            "monitor_cfg=", self.monitor_cfg,
+            "monitor_layers=", self.monitor_layers,
+        )
+
 
         self.eplb_state: EplbState | None = None
         # NOTE(yongji): flag to temporarily disable EPLB during scaling up/down
@@ -775,6 +846,8 @@ class GPUModelRunner(
         self.mamba_state_idx: dict[str, int] = {}
         self._mamba_copy_bufs: mamba_utils.MambaCopyBuffers | None = None
         self.layerwise_nvtx_hooks_registered = False
+
+
 
     def update_max_model_len(self, max_model_len: int) -> None:
         self.max_model_len = max_model_len
@@ -3643,13 +3716,31 @@ class GPUModelRunner(
             )
 
         with record_function_or_nullcontext("gpu_model_runner: postprocess"):
+            # Accept both vanilla tensor output and tuple/list outputs from
+            # custom monitoring / hidden-state plumbing.
             if self.use_aux_hidden_state_outputs:
-                # True when EAGLE 3 is used.
                 hidden_states, aux_hidden_states = model_output
             else:
-                # Common case.
-                hidden_states = model_output
-                aux_hidden_states = None
+                if isinstance(model_output, (tuple, list)):
+                    # Custom model path may return extra outputs.
+                    hidden_states = model_output[0]
+                    aux_hidden_states = model_output[1] if len(model_output) > 1 else None
+                    print(
+                        "MONDBG postprocess tuple model_output:",
+                        "len=", len(model_output),
+                        "type0=", type(model_output[0]),
+                        "type1=", None if len(model_output) < 2 else type(model_output[1]),
+                    )
+                else:
+                    hidden_states = model_output
+                    aux_hidden_states = None
+
+            print(
+                "MONDBG postprocess resolved:",
+                "hidden_states_type=", type(hidden_states),
+                "aux_type=", type(aux_hidden_states) if aux_hidden_states is not None else None,
+                "hidden_states_shape=", getattr(hidden_states, "shape", None),
+            )
 
             if not self.broadcast_pp_output:
                 # Common case.
@@ -3668,7 +3759,12 @@ class GPUModelRunner(
                         num_scheduled_tokens_np,
                         kv_connector_output,
                     )
-
+                print(
+                    "MONDBG before sample_hidden_states:",
+                    "type(hidden_states)=", type(hidden_states),
+                    "logits_indices_type=", type(logits_indices),
+                    "logits_indices=", logits_indices[:10] if hasattr(logits_indices, "__len__") else logits_indices,
+                )
                 sample_hidden_states = hidden_states[logits_indices]
                 logits = self.model.compute_logits(sample_hidden_states)
             else:
@@ -3715,17 +3811,18 @@ class GPUModelRunner(
         )
         self.kv_connector_output = kv_connector_output
         return None
-
-    @torch.inference_mode
+    @torch.inference_mode()
     def sample_tokens(
         self, grammar_output: "GrammarOutput | None"
     ) -> ModelRunnerOutput | AsyncModelRunnerOutput | IntermediateTensors:
         if self.execute_model_state is None:
             kv_connector_output = self.kv_connector_output
             self.kv_connector_output = None
+
             # receive sampled token ids from the last PP rank.
             if self.use_async_scheduling and get_pp_group().world_size > 1:
                 self._pp_receive_prev_sampled_token_ids_to_input_batch()
+
             if not kv_connector_output:
                 return None  # type: ignore[return-value]
 
@@ -3751,6 +3848,7 @@ class GPUModelRunner(
             cudagraph_stats,
             slot_mappings,
         ) = self.execute_model_state
+
         # Clear ephemeral state.
         self.execute_model_state = None
 
@@ -3766,6 +3864,7 @@ class GPUModelRunner(
         self._update_states_after_model_execute(
             sampler_output.sampled_token_ids, scheduler_output
         )
+
         if self.use_async_scheduling:
             pp = get_pp_group()
             # For torchrun external_launcher PP mode with broadcast_pp_output=True,
@@ -3808,6 +3907,7 @@ class GPUModelRunner(
                 or spec_config.uses_draft_model()
                 or spec_config.uses_extract_hidden_states()
             ) and not spec_config.disable_padded_drafter_batch
+
             if use_gpu_toks:
                 # EAGLE/DraftModel speculative decoding can use the GPU sampled tokens
                 # as inputs, and does not need to wait for bookkeeping to finish.
@@ -3859,6 +3959,47 @@ class GPUModelRunner(
                 spec_decode_metadata,
             )
 
+        # ------------------------------------------------------------
+        # NEW: monitor scoring
+        # Do this AFTER bookkeeping so req_ids_output_copy exists.
+        # ------------------------------------------------------------
+        monitor_outputs: dict[str, dict[str, Any]] = {}
+
+        if self.monitor_enabled and self.monitor_runtime is not None:
+            try:
+                sample_hidden_states_by_layer: dict[int, torch.Tensor] = {}
+
+                # Assumption:
+                # - sample_hidden_states already corresponds to the sampled positions
+                # - aux_hidden_states should be sliced to those same sampled rows
+                #
+                # If your aux_hidden_states are already aligned to sampled rows,
+                # use them directly. Otherwise replace this block with the correct
+                # sampled-row slicing logic for your branch.
+                if aux_hidden_states is not None:
+                    if len(aux_hidden_states) != len(self.monitor_layers):
+                        raise RuntimeError(
+                            f"Mismatch between aux_hidden_states ({len(aux_hidden_states)}) "
+                            f"and monitor_layers ({len(self.monitor_layers)})."
+                        )
+
+                    for layer_id, hs in zip(self.monitor_layers, aux_hidden_states):
+                        sample_hidden_states_by_layer[layer_id] = hs
+
+                if sample_hidden_states_by_layer:
+                    monitor_outputs = self.monitor_runtime.score_decode_step(
+                        req_ids=req_ids_output_copy,
+                        sample_hidden_states_by_layer=sample_hidden_states_by_layer,
+                        sampled_token_ids=sampler_output.sampled_token_ids,
+                    )
+                else:
+                    monitor_outputs = {}
+
+                print("DEBUG monitor_outputs in gpu_model_runner.sample_tokens =", monitor_outputs)
+            except Exception as e:
+                print("DEBUG monitor scoring failed:", e)
+                monitor_outputs = {}
+
         if propose_drafts_after_bookkeeping:
             # ngram and other speculative decoding methods use the sampled
             # tokens on the CPU, so they are run after bookkeeping.
@@ -3876,7 +4017,13 @@ class GPUModelRunner(
         # self.kv_connector_output may be modified during drafting
         kv_connector_output = self.kv_connector_output
         self.kv_connector_output = None
-
+        print(
+            "MONDBG gpu_model_runner before ModelRunnerOutput:",
+            "monitor_enabled=", self.monitor_enabled,
+            "has_runtime=", self.monitor_runtime is not None,
+            "req_ids_output_copy=", req_ids_output_copy if 'req_ids_output_copy' in locals() else None,
+            "monitor_outputs_keys=", None if monitor_outputs is None else list(monitor_outputs.keys()),
+        )
         with record_function_or_nullcontext("gpu_model_runner: ModelRunnerOutput"):
             if self.model_config.enable_return_routed_experts:
                 capturer = RoutedExpertsCapturer.get_instance()
@@ -3898,20 +4045,37 @@ class GPUModelRunner(
                 num_nans_in_logits=num_nans_in_logits,
                 cudagraph_stats=cudagraph_stats,
                 token_entropy=None,
+                monitor_outputs=monitor_outputs,
             )
-
+        print(
+            "MONDBG gpu_model_runner after ModelRunnerOutput:",
+            "hasattr(output, 'monitor_outputs')=", hasattr(output, "monitor_outputs"),
+            "output.monitor_outputs=", getattr(output, "monitor_outputs", None),
+            "output.token_entropy_len=", None if getattr(output, "token_entropy", None) is None else len(output.token_entropy),
+        )
         if not self.use_async_scheduling:
             # For sync mode, if you want entropy available immediately,
             # convert it here from sampler_output.token_entropy.
             if sampler_output.token_entropy is not None:
-                entropy_lists = sampler_output.token_entropy.tolist()
-                output.token_entropy = entropy_lists
+                if isinstance(sampler_output.token_entropy, list):
+                    output.token_entropy = sampler_output.token_entropy
+                else:
+                    output.token_entropy = sampler_output.token_entropy.tolist()
+
+            print(
+                    "ENTDBG gmr output payload:",
+                    "token_entropy_len=",
+                    None if output.token_entropy is None else len(output.token_entropy),
+                    "monitor_keys=",
+                    None if output.monitor_outputs is None else list(output.monitor_outputs.keys())[:5],
+                )
             return output
 
         with record_function_or_nullcontext(
             "gpu_model_runner: AsyncGPUModelRunnerOutput"
-        ):  
+        ):
             print("DEBUG sampler_output.token_entropy =", sampler_output.token_entropy)
+
             async_output = AsyncGPUModelRunnerOutput(
                 model_runner_output=output,
                 sampled_token_ids=sampler_output.sampled_token_ids,
@@ -3920,8 +4084,9 @@ class GPUModelRunner(
                 invalid_req_indices=invalid_req_indices,
                 async_output_copy_stream=self.async_output_copy_stream,
                 vocab_size=self.input_batch.vocab_size,
-                #token_entropy=sampler_output.token_entropy
+                #monitor_outputs=monitor_outputs,  # only if you patched the class
             )
+
         with record_function_or_nullcontext(
             "gpu_model_runner: set_async_sampled_token_ids"
         ):
@@ -3933,6 +4098,7 @@ class GPUModelRunner(
             )
 
         return async_output
+
 
     def _pp_broadcast_prev_sampled_token_ids(
         self, sampled_token_ids: torch.Tensor
@@ -3978,6 +4144,25 @@ class GPUModelRunner(
             return None
         draft_token_ids, req_ids = self._get_draft_token_ids_cpu()
         return DraftTokenIds(req_ids, draft_token_ids)
+
+    def _slice_sampled_aux_hidden_states(
+        self,
+        aux_hidden_states: list[torch.Tensor] | None,
+        sampled_row_indices: torch.Tensor,
+    ) -> dict[int, torch.Tensor]:
+        if aux_hidden_states is None or len(aux_hidden_states) == 0:
+            return {}
+
+        if len(aux_hidden_states) != len(self.monitor_layers):
+            raise RuntimeError(
+                f"Mismatch between aux_hidden_states ({len(aux_hidden_states)}) "
+                f"and monitor_layers ({len(self.monitor_layers)})."
+            )
+
+        sampled_by_layer: dict[int, torch.Tensor] = {}
+        for layer_id, hs in zip(self.monitor_layers, aux_hidden_states):
+            sampled_by_layer[layer_id] = hs[sampled_row_indices]
+        return sampled_by_layer
 
     def _copy_draft_token_ids_to_cpu(
         self, scheduler_output: "SchedulerOutput", zeros_only: bool = False
@@ -4307,6 +4492,34 @@ class GPUModelRunner(
                 if self.lora_config:
                     self.model = self.load_lora_model(
                         self.model, self.vllm_config, self.device
+                    )
+                if self.monitor_enabled:
+                    print(
+                        "MONDBG load_model monitor setup start:",
+                        "monitor_enabled=", self.monitor_enabled,
+                        "monitor_layers=", self.monitor_layers,
+                        "monitor_cfg=", self.monitor_cfg,
+                    )
+
+                    if hasattr(self.model, "set_aux_hidden_state_layers"):
+                        self.model.set_aux_hidden_state_layers(self.monitor_layers)
+                        print(
+                            "MONDBG set_aux_hidden_state_layers OK:",
+                            self.monitor_layers,
+                        )
+                    else:
+                        raise RuntimeError(
+                            "monitor_config.enabled=True but model does not implement "
+                            "set_aux_hidden_state_layers()."
+                        )
+
+                    print("MONDBG before build_monitor_runtime:", self.monitor_cfg)
+                    self.monitor_runtime = build_monitor_runtime(
+                        self.monitor_cfg, self.device
+                    )
+                    print(
+                        "MONDBG after build_monitor_runtime:",
+                        type(self.monitor_runtime),
                     )
                 if hasattr(self, "drafter"):
                     logger.info_once("Loading drafter model...")
@@ -5014,10 +5227,18 @@ class GPUModelRunner(
                     **model_kwargs,
                 )
 
-            if self.use_aux_hidden_state_outputs:
-                hidden_states, _ = outputs
+            # Robust unpacking for monitor / aux-hidden-state path
+            if isinstance(outputs, tuple):
+                hidden_states = outputs[0]
+                aux_hidden_states = outputs[1] if len(outputs) > 1 else None
             else:
                 hidden_states = outputs
+                aux_hidden_states = None
+
+            if not isinstance(hidden_states, torch.Tensor):
+                raise RuntimeError(
+                    f"_dummy_run expected hidden_states to be torch.Tensor, got {type(hidden_states)}"
+                )
 
             if self.speculative_config and (
                 self.speculative_config.use_eagle()

@@ -1,0 +1,44 @@
+{
+  "64": {
+    "n": 0,
+    "accuracy": null,
+    "mean_reasoning_entropy": null,
+    "mean_thinking_token_count": null
+  },
+  "128": {
+    "n": 0,
+    "accuracy": null,
+    "mean_reasoning_entropy": null,
+    "mean_thinking_token_count": null
+  },
+  "256": {
+    "n": 0,
+    "accuracy": null,
+    "mean_reasoning_entropy": null,
+    "mean_thinking_token_count": null
+  },
+  "512": {
+    "n": 0,
+    "accuracy": null,
+    "mean_reasoning_entropy": null,
+    "mean_thinking_token_count": null
+  },
+  "1024": {
+    "n": 0,
+    "accuracy": null,
+    "mean_reasoning_entropy": null,
+    "mean_thinking_token_count": null
+  },
+  "2048": {
+    "n": 0,
+    "accuracy": null,
+    "mean_reasoning_entropy": null,
+    "mean_thinking_token_count": null
+  },
+  "4096": {
+    "n": 0,
+    "accuracy": null,
+    "mean_reasoning_entropy": null,
+    "mean_thinking_token_count": null
+  }
+}

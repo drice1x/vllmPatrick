@@ -94,6 +94,8 @@ class ChatCompletionResponseChoice(OpenAIBaseModel):
     # not part of the OpenAI spec but is useful for tracing the tokens
     # in agent scenarios
     token_ids: list[int] | None = None
+    monitor: dict[str, Any] | None = None
+
 
 
 class ChatCompletionResponse(OpenAIBaseModel):
@@ -112,6 +114,7 @@ class ChatCompletionResponse(OpenAIBaseModel):
     kv_transfer_params: dict[str, Any] | None = Field(
         default=None, description="KVTransfer parameters."
     )
+    monitor: dict[str, Any] | None = None
 
 
 class ChatCompletionResponseStreamChoice(OpenAIBaseModel):
@@ -122,6 +125,7 @@ class ChatCompletionResponseStreamChoice(OpenAIBaseModel):
     stop_reason: int | str | None = None
     # not part of the OpenAI spec but for tracing the tokens
     token_ids: list[int] | None = None
+    monitor: dict[str, Any] | None = None
 
 
 class ChatCompletionStreamResponse(OpenAIBaseModel):
@@ -133,6 +137,7 @@ class ChatCompletionStreamResponse(OpenAIBaseModel):
     usage: UsageInfo | None = Field(default=None)
     # not part of the OpenAI spec but for tracing the tokens
     prompt_token_ids: list[int] | None = None
+    monitor: dict[str, Any] | None = None
 
 
 class ChatCompletionToolsParam(OpenAIBaseModel):
@@ -205,7 +210,21 @@ class ChatCompletionRequest(OpenAIBaseModel):
     )
     prompt_logprobs: int | None = None
     allowed_token_ids: list[int] | None = None
+    return_entropy: bool | None = False
     bad_words: list[str] = Field(default_factory=list)
+
+
+
+    monitor: dict[str, Any] | None = Field(
+        default=None,
+        description=(
+            "Custom monitoring configuration for activation-based tracing. "
+            "Example: {'enabled': true, 'model_family': 'qwen3_8b', "
+            "'adapter_name': 'mix10', 'layers': [32,33,34,35,36], "
+            "'return_token_scores': true, 'reasoning_span_only': false}"
+        ),
+    )
+
     # --8<-- [end:chat-completion-sampling-params]
 
     # --8<-- [start:chat-completion-extra-params]
@@ -348,7 +367,7 @@ class ChatCompletionRequest(OpenAIBaseModel):
         "(e.g. 'abcdabcdabcd...' or '\\emoji \\emoji \\emoji ...'). This feature "
         "can detect such behavior and terminate early, saving time and tokens.",
     )
-    return_entropy: bool | None = False
+    
 
     # --8<-- [end:chat-completion-extra-params]
 
@@ -484,6 +503,17 @@ class ChatCompletionRequest(OpenAIBaseModel):
         if self.kv_transfer_params:
             # Pass in kv_transfer_params via extra_args
             extra_args["kv_transfer_params"] = self.kv_transfer_params
+        print(
+                "ENTDBG chat_request:",
+                "model=", self.model,
+                "logprobs=", self.logprobs,
+                "top_logprobs=", self.top_logprobs,
+                "return_entropy=", getattr(self, "return_entropy", None),
+            )
+        print(
+                "ENTDBG to_sampling_params:",
+                "return_entropy->", self.return_entropy,
+            )
         return SamplingParams.from_optional(
             n=self.n,
             presence_penalty=self.presence_penalty,

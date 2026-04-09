@@ -339,6 +339,7 @@ class SamplingParams(
         repetition_detection: RepetitionDetectionParams | None = None,
         return_entropy: bool = False,
         entropy_mode: str = "processed",
+        monitor_config: dict | None = None,
     ) -> "SamplingParams":
         if logit_bias is not None:
             # Convert token_id to integer
@@ -347,6 +348,8 @@ class SamplingParams(
                 int(token): min(100.0, max(-100.0, bias))
                 for token, bias in logit_bias.items()
             }
+
+
 
         return SamplingParams(
             n=1 if n is None else n,
@@ -380,7 +383,8 @@ class SamplingParams(
             skip_clone=skip_clone,
             repetition_detection=repetition_detection,
             return_entropy=return_entropy,
-            entropy_mode=entropy_mode,            
+            entropy_mode=entropy_mode, 
+            #monitor_outputs=monitor_outputs           
         )
 
     def __post_init__(self) -> None:

@@ -47,6 +47,9 @@ class CompletionOutput:
     stop_reason: int | str | None = None
     token_entropy: list[float] | None = None
     lora_request: LoRARequest | None = None
+    monitor: dict[str, Any] | None = None
+    monitor_delta: dict[str, Any] | None = None
+
 
     def finished(self) -> bool:
         return self.finish_reason is not None
@@ -122,6 +125,7 @@ class RequestOutput:
         num_cached_tokens: int | None = None,
         *,
         kv_transfer_params: dict[str, Any] | None = None,
+        monitor_outputs: dict[str, Any] | None = None,
         # Forward compatibility, code that uses args added in new release can
         # still run with older versions of vLLM without breaking.
         **kwargs: Any,
@@ -142,11 +146,27 @@ class RequestOutput:
         self.encoder_prompt_token_ids = encoder_prompt_token_ids
         self.num_cached_tokens = num_cached_tokens
         self.kv_transfer_params = kv_transfer_params
+        self.monitor_outputs = monitor_outputs
+        print(
+            "MONDBG RequestOutput.__init__:",
+            "request_id=", request_id,
+            "monitor_outputs=", monitor_outputs,
+        )
 
+        
     def add(self, next_output: "RequestOutput", aggregate: bool) -> None:
         self.finished |= next_output.finished
         self.kv_transfer_params = next_output.kv_transfer_params
+        next_monitor = getattr(next_output, "monitor_outputs", None)
+        if next_monitor is not None:
+            self.monitor_outputs = next_monitor
 
+        print(
+            "MONDBG RequestOutput.add:",
+            "request_id=", self.request_id,
+            "next_monitor=", next_monitor,
+            "merged_monitor=", getattr(self, "monitor_outputs", None),
+        )
         for next_completion in next_output.outputs:
             for i, completion in enumerate(self.outputs):
                 if completion.index == next_completion.index:
@@ -165,6 +185,13 @@ class RequestOutput:
                             if completion.token_entropy is None:
                                 completion.token_entropy = []
                             completion.token_entropy.extend(next_completion.token_entropy)
+
+                        print(
+                                "ENTDBG request_output.add:",
+                                "completion_index=", completion.index,
+                                "next_entropy_len=", None if next_completion.token_entropy is None else len(next_completion.token_entropy),
+                                "merged_entropy_len=", None if completion.token_entropy is None else len(completion.token_entropy),
+                            )
 
                         completion.cumulative_logprob = next_completion.cumulative_logprob
                         completion.finish_reason = next_completion.finish_reason

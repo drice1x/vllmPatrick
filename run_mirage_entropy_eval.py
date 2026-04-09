@@ -69,7 +69,7 @@ NATURAL_REASONING_MAX_TOKENS = 8192
 DATASET_NAME = "gsm8k"
 DATASET_CONFIG = "main"
 DATASET_SPLIT = "test"
-NUM_SAMPLES = 500  # None => full GSM8K test set (1320)
+NUM_SAMPLES = 1  # None => full GSM8K test set (1320)
 
 RANDOM_SEED = 42
 

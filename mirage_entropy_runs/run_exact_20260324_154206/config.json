@@ -1,0 +1,27 @@
+{
+  "MODE": "exact",
+  "MODEL_NAME": "qwen25-7b-reasoning",
+  "HF_TOKENIZER_NAME": "deepseek-ai/DeepSeek-R1-Distill-Qwen-7B",
+  "TEMPERATURE": 0.7,
+  "WAIT_INSERTION_LIST": [
+    0,
+    1,
+    2,
+    4,
+    8,
+    16,
+    32
+  ],
+  "THINKING_BUDGET_LIST": [
+    64,
+    128,
+    256,
+    512,
+    1024,
+    2048,
+    4096
+  ],
+  "FINAL_ANSWER_MAX_TOKENS": 64,
+  "NATURAL_REASONING_MAX_TOKENS": 8192,
+  "NUM_SAMPLES": 1
+}

@@ -135,12 +135,8 @@ class Qwen2Attention(nn.Module):
         self.num_heads = self.total_num_heads // tp_size
         self.total_num_kv_heads = num_kv_heads
         if self.total_num_kv_heads >= tp_size:
-            # Number of KV heads is greater than TP size, so we partition
-            # the KV heads across multiple tensor parallel GPUs.
             assert self.total_num_kv_heads % tp_size == 0
         else:
-            # Number of KV heads is less than TP size, so we replicate
-            # the KV heads across multiple tensor parallel GPUs.
             assert tp_size % self.total_num_kv_heads == 0
         self.num_kv_heads = max(1, self.total_num_kv_heads // tp_size)
         self.head_dim = hidden_size // self.total_num_heads
@@ -167,7 +163,6 @@ class Qwen2Attention(nn.Module):
             prefix=f"{prefix}.o_proj",
         )
 
-        # QK Normalization support (used in BAGEL and some other models)
         if self.qk_norm:
             self.q_norm = RMSNorm(self.head_dim, eps=rms_norm_eps)
             self.k_norm = RMSNorm(self.head_dim, eps=rms_norm_eps)
@@ -208,19 +203,14 @@ class Qwen2Attention(nn.Module):
         qkv, _ = self.qkv_proj(hidden_states)
         q, k, v = qkv.split([self.q_size, self.kv_size, self.kv_size], dim=-1)
 
-        # Apply QK normalization if enabled (before RoPE)
         if self.qk_norm:
-            # Reshape to apply per-head normalization
-            # q shape: (total_tokens, q_size) -> (total_tokens, num_heads, head_dim)
             total_tokens = q.shape[0]
             q = q.view(total_tokens, self.num_heads, self.head_dim)
             k = k.view(total_tokens, self.num_kv_heads, self.head_dim)
 
-            # Apply normalization
             q = self.q_norm(q)
             k = self.k_norm(k)
 
-            # Reshape back
             q = q.view(total_tokens, self.q_size)
             k = k.view(total_tokens, self.kv_size)
 
@@ -245,16 +235,11 @@ class Qwen2DecoderLayer(nn.Module):
             config, "dual_chunk_attention_config", None
         )
 
-        # By default, Qwen2 uses causal attention as it is a decoder-only model.
-        # You can override the HF config with `is_causal=False` to enable
-        # bidirectional attention, which is used in some embedding models
-        # (e.g. Alibaba-NLP/gte-Qwen2-7B-instruct)
         if getattr(config, "is_causal", True):
             attn_type = AttentionType.DECODER
         else:
             attn_type = AttentionType.ENCODER_ONLY
 
-        # Check if QK normalization is enabled (used in BAGEL and some other models)
         qk_norm = getattr(config, "qk_norm", False)
 
         self.self_attn = Qwen2Attention(
@@ -289,7 +274,6 @@ class Qwen2DecoderLayer(nn.Module):
         hidden_states: torch.Tensor,
         residual: torch.Tensor | None,
     ) -> tuple[torch.Tensor, torch.Tensor]:
-        # Self Attention
         if residual is None:
             residual = hidden_states
             hidden_states = self.input_layernorm(hidden_states)
@@ -300,7 +284,6 @@ class Qwen2DecoderLayer(nn.Module):
             hidden_states=hidden_states,
         )
 
-        # Fully Connected
         hidden_states, residual = self.post_attention_layernorm(hidden_states, residual)
         hidden_states = self.mlp(hidden_states)
         return hidden_states, residual
@@ -312,14 +295,6 @@ def qwen_2_model_invariants(
     intermediate_tensors: IntermediateTensors | None = None,
     inputs_embeds: torch.Tensor | None = None,
 ):
-    """Shape invariants for Qwen2Model Model, those are translated to
-    runtime assertions for unbacked dynamic shapes and are compiled away for
-    backed"""
-    # All these should be equal.
-    # input_ids.size()[0]
-    # positions.size()[-1]
-    # intermediate_tensors["hidden_states"].size()[0]
-    # inputs_embeds.size()[0]
     torch._check(input_ids.size()[0] == positions.size()[-1])
     if intermediate_tensors is not None:
         torch._check(
@@ -329,9 +304,6 @@ def qwen_2_model_invariants(
     if inputs_embeds is not None:
         torch._check(input_ids.size()[0] == inputs_embeds.size()[0])
 
-    # Hidden dimensions should match (hidden_size)
-    # intermediate_tensors["hidden_states"].size()[1]
-    # inputs_embeds.size()[1]
     if inputs_embeds is not None and intermediate_tensors is not None:
         torch._check(
             inputs_embeds.size()[1] == intermediate_tensors["hidden_states"].size()[1]
@@ -341,8 +313,6 @@ def qwen_2_model_invariants(
 @support_torch_compile(
     dynamic_arg_dims={
         "input_ids": 0,
-        # positions is of shape (3, seq_len) if mrope is enabled for qwen2-vl,
-        # otherwise (seq_len, ).
         "positions": -1,
         "intermediate_tensors": 0,
         "inputs_embeds": 0,
@@ -363,7 +333,6 @@ class Qwen2Model(nn.Module):
         cache_config = vllm_config.cache_config
         quant_config = vllm_config.quant_config
 
-        # TODO (@robertgshaw2): see if this can be moved out
         if is_interleaved(vllm_config.model_config.hf_text_config):
             assert config.max_window_layers == config.num_hidden_layers, (
                 "Sliding window for some but all layers is not supported. "
@@ -410,7 +379,25 @@ class Qwen2Model(nn.Module):
         else:
             self.norm = PPMissingLayer()
 
-        self.aux_hidden_state_layers = tuple[int, ...]()
+        # Auxiliary hidden-state capture.
+        #
+        # Semantics are chosen to match HF-style hidden_states indexing:
+        #   0                -> embeddings / input to first layer
+        #   1..num_layers-1  -> state entering layer k
+        #   num_layers       -> final post-norm hidden state
+        #
+        # This matches the kind of tensor used by offline pipelines that read
+        # out.hidden_states[layer_idx].
+        self.aux_hidden_state_layers: tuple[int, ...] = tuple()
+
+    def _materialize_hidden_state(
+        self,
+        hidden_states: torch.Tensor,
+        residual: torch.Tensor | None,
+    ) -> torch.Tensor:
+        if residual is None:
+            return hidden_states
+        return hidden_states + residual
 
     def embed_input_ids(self, input_ids: torch.Tensor) -> torch.Tensor:
         return self.embed_tokens(input_ids)
@@ -421,7 +408,7 @@ class Qwen2Model(nn.Module):
         positions: torch.Tensor,
         intermediate_tensors: IntermediateTensors | None = None,
         inputs_embeds: torch.Tensor | None = None,
-    ) -> torch.Tensor | IntermediateTensors:
+    ) -> torch.Tensor | IntermediateTensors | tuple[torch.Tensor, list[torch.Tensor]]:
         if get_pp_group().is_first_rank:
             if inputs_embeds is not None:
                 hidden_states = inputs_embeds
@@ -433,12 +420,28 @@ class Qwen2Model(nn.Module):
             hidden_states = intermediate_tensors["hidden_states"]
             residual = intermediate_tensors["residual"]
 
-        aux_hidden_states = []
+        aux_hidden_states: list[torch.Tensor] = []
+        aux_set = set(self.aux_hidden_state_layers)
+
+        # Hidden-state index 0 corresponds to embeddings / first-stage input.
+        if get_pp_group().is_first_rank and 0 in aux_set:
+            aux_hidden_states.append(
+                self._materialize_hidden_state(hidden_states, residual)
+            )
+
         for idx, layer in enumerate(
             islice(self.layers, self.start_layer, self.end_layer)
         ):
-            if idx in self.aux_hidden_state_layers:
-                aux_hidden_states.append(hidden_states + residual)
+            # Global hidden-state index matching HF-style hidden_states indexing.
+            # We capture BEFORE executing layer(global_idx), which corresponds to
+            # the state entering that layer.
+            global_hidden_state_idx = self.start_layer + idx
+
+            if global_hidden_state_idx != 0 and global_hidden_state_idx in aux_set:
+                aux_hidden_states.append(
+                    self._materialize_hidden_state(hidden_states, residual)
+                )
+
             hidden_states, residual = layer(positions, hidden_states, residual)
 
         if not get_pp_group().is_last_rank:
@@ -448,6 +451,11 @@ class Qwen2Model(nn.Module):
 
         hidden_states, _ = self.norm(hidden_states, residual)
 
+        # Final post-norm hidden state uses index == num_hidden_layers.
+        final_hidden_state_idx = self.config.num_hidden_layers
+        if final_hidden_state_idx in aux_set:
+            aux_hidden_states.append(hidden_states)
+
         if len(aux_hidden_states) > 0:
             return hidden_states, aux_hidden_states
 
@@ -455,7 +463,6 @@ class Qwen2Model(nn.Module):
 
     def load_weights(self, weights: Iterable[tuple[str, torch.Tensor]]) -> set[str]:
         stacked_params_mapping = [
-            # (param_name, shard_name, shard_id)
             ("qkv_proj", "q_proj", "q"),
             ("qkv_proj", "k_proj", "k"),
             ("qkv_proj", "v_proj", "v"),
@@ -470,7 +477,6 @@ class Qwen2Model(nn.Module):
             if self.quant_config is not None and (
                 scale_name := self.quant_config.get_cache_scale(name)
             ):
-                # Loading kv cache quantization scales
                 param = params_dict[scale_name]
                 weight_loader = getattr(param, "weight_loader", default_weight_loader)
                 loaded_weight = (
@@ -483,13 +489,11 @@ class Qwen2Model(nn.Module):
                 if weight_name not in name:
                     continue
                 name = name.replace(weight_name, param_name)
-                # Skip loading extra bias for GPTQ models.
                 if name.endswith(".bias") and name not in params_dict:
                     continue
                 if is_pp_missing_parameter(name, self):
                     continue
                 if name.endswith("scale"):
-                    # Remapping the name of FP8 kv-scale.
                     name = maybe_remap_kv_scale_name(name, params_dict)
                     if name is None:
                         continue
@@ -501,10 +505,8 @@ class Qwen2Model(nn.Module):
                     weight_loader(param, loaded_weight, shard_id)
                 break
             else:
-                # Skip loading extra bias for GPTQ models.
                 if name.endswith(".bias") and name not in params_dict:
                     continue
-                # Remapping the name of FP8 kv-scale.
                 name = maybe_remap_kv_scale_name(name, params_dict)
                 if name is None:
                     continue
@@ -538,10 +540,10 @@ class Qwen2ForCausalLM(nn.Module, SupportsLoRA, SupportsPP, SupportsEagle3):
         quant_config = vllm_config.quant_config
 
         self.config = config
-
         self.quant_config = quant_config
         self.model = Qwen2Model(
-            vllm_config=vllm_config, prefix=maybe_prefix(prefix, "model")
+            vllm_config=vllm_config,
+            prefix=maybe_prefix(prefix, "model"),
         )
 
         if get_pp_group().is_last_rank:
@@ -558,7 +560,6 @@ class Qwen2ForCausalLM(nn.Module, SupportsLoRA, SupportsPP, SupportsEagle3):
             self.lm_head = PPMissingLayer()
 
         self.logits_processor = LogitsProcessor(config.vocab_size)
-
         self.make_empty_intermediate_tensors = (
             self.model.make_empty_intermediate_tensors
         )
@@ -567,7 +568,16 @@ class Qwen2ForCausalLM(nn.Module, SupportsLoRA, SupportsPP, SupportsEagle3):
         return self.model.embed_input_ids(input_ids)
 
     def set_aux_hidden_state_layers(self, layers: tuple[int, ...]) -> None:
-        self.model.aux_hidden_state_layers = layers
+        # Valid hidden-state index range:
+        #   0 .. num_hidden_layers
+        # where num_hidden_layers is the final post-norm hidden state.
+        max_idx = self.config.num_hidden_layers
+        cleaned = []
+        for x in layers:
+            xi = int(x)
+            if 0 <= xi <= max_idx:
+                cleaned.append(xi)
+        self.model.aux_hidden_state_layers = tuple(sorted(set(cleaned)))
 
     def get_eagle3_aux_hidden_state_layers(self) -> tuple[int, ...]:
         num_layers = len(self.model.layers)
@@ -579,7 +589,7 @@ class Qwen2ForCausalLM(nn.Module, SupportsLoRA, SupportsPP, SupportsEagle3):
         positions: torch.Tensor,
         intermediate_tensors: IntermediateTensors | None = None,
         inputs_embeds: torch.Tensor | None = None,
-    ) -> torch.Tensor | IntermediateTensors:
+    ) -> torch.Tensor | IntermediateTensors | tuple[torch.Tensor, list[torch.Tensor]]:
         hidden_states = self.model(
             input_ids, positions, intermediate_tensors, inputs_embeds
         )
