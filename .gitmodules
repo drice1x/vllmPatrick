@@ -1,3 +1,6 @@
 [submodule "BALROG"]
 	path = BALROG
 	url = https://github.com/drice1x/BALROG.git
+[submodule "alfworld"]
+	path = alfworld
+	url = https://github.com/drice1x/alfworld.git
