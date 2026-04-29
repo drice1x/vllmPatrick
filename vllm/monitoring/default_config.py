@@ -1,7 +1,9 @@
 DEFAULT_MONITOR_CONFIG = {
     "enabled": True,
     "model_family": "qwen3_8b",
-    "layers": [33, 34, 35, 36],
+    #"layers": [28, 29, 30, 31], llama
+    "layers": [32, 33, 34, 35], 
+    #"layers": [24, 25, 26, 27], falcon
     "sae_dir": "/home/patrick/hacking_monitoringpipeline/saes_h8000_qwen",
     "pca_dir": "/home/patrick/hacking_monitoringpipeline/models_qwen",
     "layer_agg": "mean",

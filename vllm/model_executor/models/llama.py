@@ -394,11 +394,78 @@ class LlamaModel(nn.Module):
         self.make_empty_intermediate_tensors = make_empty_intermediate_tensors_factory(
             ["hidden_states", "residual"], config.hidden_size
         )
+    def _materialize_hidden_state(
+        self,
+        hidden_states: torch.Tensor,
+        residual: torch.Tensor | None,
+    ) -> torch.Tensor:
+        if residual is None:
+            return hidden_states
+        return hidden_states + residual
 
     def embed_input_ids(self, input_ids: torch.Tensor) -> torch.Tensor:
         return self.embed_tokens(input_ids)
 
     def forward(
+        self,
+        input_ids: torch.Tensor | None,
+        positions: torch.Tensor,
+        intermediate_tensors: IntermediateTensors | None,
+        inputs_embeds: torch.Tensor | None = None,
+        **extra_layer_kwargs,
+    ) -> torch.Tensor | IntermediateTensors | tuple[torch.Tensor, list[torch.Tensor]]:
+        if get_pp_group().is_first_rank:
+            if inputs_embeds is not None:
+                hidden_states = inputs_embeds
+            else:
+                hidden_states = self.embed_input_ids(input_ids)
+            residual = None
+        else:
+            assert intermediate_tensors is not None
+            hidden_states = intermediate_tensors["hidden_states"]
+            residual = intermediate_tensors["residual"]
+
+        aux_hidden_states: list[torch.Tensor] = []
+        aux_set = set(self.aux_hidden_state_layers)
+
+        # HF-style hidden_states[0] = embeddings / model input
+        if get_pp_group().is_first_rank and 0 in aux_set:
+            aux_hidden_states.append(
+                self._materialize_hidden_state(hidden_states, residual)
+            )
+
+        for idx, layer in enumerate(
+            islice(self.layers, self.start_layer, self.end_layer)
+        ):
+            global_hidden_state_idx = self.start_layer + idx
+
+            # capture state entering layer(global_hidden_state_idx)
+            if global_hidden_state_idx != 0 and global_hidden_state_idx in aux_set:
+                aux_hidden_states.append(
+                    self._materialize_hidden_state(hidden_states, residual)
+                )
+
+            hidden_states, residual = layer(
+                positions, hidden_states, residual, **extra_layer_kwargs
+            )
+
+        if not get_pp_group().is_last_rank:
+            return IntermediateTensors(
+                {"hidden_states": hidden_states, "residual": residual}
+            )
+
+        hidden_states, _ = self.norm(hidden_states, residual)
+
+        # HF-style final hidden state index = num_hidden_layers
+        final_hidden_state_idx = self.config.num_hidden_layers
+        if final_hidden_state_idx in aux_set:
+            aux_hidden_states.append(hidden_states)
+
+        if len(aux_hidden_states) > 0:
+            return hidden_states, aux_hidden_states
+        return hidden_states
+
+    def forwardOLD(
         self,
         input_ids: torch.Tensor | None,
         positions: torch.Tensor,
@@ -556,8 +623,17 @@ class LlamaForCausalLM(
             self.model.make_empty_intermediate_tensors
         )
 
-    def set_aux_hidden_state_layers(self, layers: tuple[int, ...]) -> None:
+    def set_aux_hidden_state_layersOLD(self, layers: tuple[int, ...]) -> None:
         self.model.aux_hidden_state_layers = layers
+        
+    def set_aux_hidden_state_layers(self, layers: tuple[int, ...]) -> None:
+        max_idx = self.config.num_hidden_layers
+        cleaned = []
+        for x in layers:
+            xi = int(x)
+            if 0 <= xi <= max_idx:
+                cleaned.append(xi)
+        self.model.aux_hidden_state_layers = tuple(sorted(set(cleaned)))
 
     def get_eagle3_aux_hidden_state_layers(self) -> tuple[int, ...]:
         """Override to return default layers for Llama
@@ -585,7 +661,7 @@ class LlamaForCausalLM(
         positions: torch.Tensor,
         intermediate_tensors: IntermediateTensors | None = None,
         inputs_embeds: torch.Tensor | None = None,
-    ) -> torch.Tensor | IntermediateTensors:
+    ) -> torch.Tensor | IntermediateTensors | tuple[torch.Tensor, list[torch.Tensor]]:
         model_output = self.model(
             input_ids, positions, intermediate_tensors, inputs_embeds
         )

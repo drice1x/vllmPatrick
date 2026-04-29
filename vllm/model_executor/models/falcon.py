@@ -56,7 +56,7 @@ from vllm.model_executor.model_loader.weight_utils import default_weight_loader
 from vllm.sequence import IntermediateTensors
 from vllm.transformers_utils.configs import RWConfig
 
-from .interfaces import SupportsPP
+from .interfaces import SupportsEagle3, SupportsPP
 from .utils import (
     AutoWeightsLoader,
     is_pp_missing_parameter,
@@ -396,11 +396,68 @@ class FalconModel(nn.Module):
         self.make_empty_intermediate_tensors = make_empty_intermediate_tensors_factory(
             ["hidden_states"], config.hidden_size
         )
+        # HF-style hidden state indexing:
+        #   0                -> embeddings / model input
+        #   1..num_layers-1  -> state entering layer k
+        #   num_layers       -> final post-ln_f hidden state
+        self.aux_hidden_state_layers: tuple[int, ...] = tuple()
+
+    def _materialize_hidden_state(
+        self,
+        hidden_states: torch.Tensor,
+    ) -> torch.Tensor:
+        return hidden_states
 
     def embed_input_ids(self, input_ids: torch.Tensor) -> torch.Tensor:
         return self.word_embeddings(input_ids)
 
     def forward(
+        self,
+        input_ids: torch.Tensor | None,
+        positions: torch.Tensor,
+        intermediate_tensors: IntermediateTensors | None,
+        inputs_embeds: torch.Tensor | None = None,
+    ) -> torch.Tensor | IntermediateTensors | tuple[torch.Tensor, list[torch.Tensor]]:
+        if get_pp_group().is_first_rank:
+            if inputs_embeds is not None:
+                hidden_states = inputs_embeds
+            else:
+                hidden_states = self.embed_input_ids(input_ids)
+        else:
+            assert intermediate_tensors is not None
+            hidden_states = intermediate_tensors["hidden_states"]
+
+        aux_hidden_states: list[torch.Tensor] = []
+        aux_set = set(self.aux_hidden_state_layers)
+
+        # HF-style hidden_states[0] = embeddings / model input
+        if get_pp_group().is_first_rank and 0 in aux_set:
+            aux_hidden_states.append(self._materialize_hidden_state(hidden_states))
+
+        for idx, layer in enumerate(islice(self.h, self.start_layer, self.end_layer)):
+            global_hidden_state_idx = self.start_layer + idx
+
+            if global_hidden_state_idx != 0 and global_hidden_state_idx in aux_set:
+                aux_hidden_states.append(
+                    self._materialize_hidden_state(hidden_states)
+                )
+
+            hidden_states = layer(positions, hidden_states)
+
+        if not get_pp_group().is_last_rank:
+            return IntermediateTensors({"hidden_states": hidden_states})
+
+        hidden_states = self.ln_f(hidden_states)
+
+        final_hidden_state_idx = self.config.num_hidden_layers
+        if final_hidden_state_idx in aux_set:
+            aux_hidden_states.append(hidden_states)
+
+        if len(aux_hidden_states) > 0:
+            return hidden_states, aux_hidden_states
+        return hidden_states
+
+    def forwardOLD(
         self,
         input_ids: torch.Tensor | None,
         positions: torch.Tensor,
@@ -477,7 +534,7 @@ class FalconModel(nn.Module):
         return loaded_params
 
 
-class FalconForCausalLM(nn.Module, SupportsPP):
+class FalconForCausalLM(nn.Module, SupportsPP, SupportsEagle3):
     packed_modules_mapping = {
         "query_key_value": ["query_key_value"],
     }
@@ -516,13 +573,26 @@ class FalconForCausalLM(nn.Module, SupportsPP):
     def embed_input_ids(self, input_ids: torch.Tensor) -> torch.Tensor:
         return self.transformer.embed_input_ids(input_ids)
 
+    def set_aux_hidden_state_layers(self, layers: tuple[int, ...]) -> None:
+        max_idx = self.config.num_hidden_layers
+        cleaned = []
+        for x in layers:
+            xi = int(x)
+            if 0 <= xi <= max_idx:
+                cleaned.append(xi)
+        self.transformer.aux_hidden_state_layers = tuple(sorted(set(cleaned)))
+
+    def get_eagle3_aux_hidden_state_layers(self) -> tuple[int, ...]:
+        num_layers = len(self.transformer.h)
+        return (2, num_layers // 2, num_layers - 3)
+
     def forward(
         self,
         input_ids: torch.LongTensor,
         positions: torch.Tensor,
         intermediate_tensors: IntermediateTensors | None = None,
         inputs_embeds: torch.Tensor | None = None,
-    ) -> torch.Tensor:
+    ) -> torch.Tensor | IntermediateTensors | tuple[torch.Tensor, list[torch.Tensor]]:
         hidden_states = self.transformer(
             input_ids, positions, intermediate_tensors, inputs_embeds
         )
