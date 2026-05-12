@@ -1,0 +1,34 @@
+\begin{tabular}{lllllllll}
+ \toprule
+environment & target & feature_group & positives & base_rate & AUROC & AUPRC & AUPRC_gain & Recall@20% \\
+ \midrule
+alfworld & bad_action_t1 & p_hack_only & 1311.000 & 0.517 & 0.555 & 0.549 & 0.032 & 0.217 \\
+alfworld & bad_action_t1 & entropy_only & 1311.000 & 0.517 & 0.547 & 0.527 & 0.009 & 0.198 \\
+alfworld & bad_action_t1 & temporal_internal & 1311.000 & 0.517 & 0.549 & 0.549 & 0.032 & 0.220 \\
+alfworld & bad_action_t1 & context_only & 1311.000 & 0.517 & 0.648 & 0.655 & 0.138 & 0.271 \\
+alfworld & bad_action_t1 & p_hack_plus_entropy & 1311.000 & 0.517 & 0.575 & 0.599 & 0.082 & 0.257 \\
+alfworld & bad_action_t1 & internal_all & 1311.000 & 0.517 & 0.575 & 0.599 & 0.082 & 0.257 \\
+alfworld & bad_action_t1 & internal_plus_context & 1311.000 & 0.517 & 0.664 & 0.677 & 0.160 & 0.281 \\
+alfworld & exploit_action_t1 & p_hack_only & 50.000 & 0.020 & 0.663 & 0.033 & 0.013 & 0.340 \\
+alfworld & exploit_action_t1 & entropy_only & 50.000 & 0.020 & 0.157 & 0.011 & -0.009 & 0.020 \\
+alfworld & exploit_action_t1 & temporal_internal & 50.000 & 0.020 & 0.666 & 0.033 & 0.013 & 0.300 \\
+alfworld & exploit_action_t1 & context_only & 50.000 & 0.020 & 0.917 & 0.395 & 0.375 & 0.880 \\
+alfworld & exploit_action_t1 & p_hack_plus_entropy & 50.000 & 0.020 & 0.603 & 0.028 & 0.008 & 0.320 \\
+alfworld & exploit_action_t1 & internal_all & 50.000 & 0.020 & 0.603 & 0.028 & 0.008 & 0.320 \\
+alfworld & exploit_action_t1 & internal_plus_context & 50.000 & 0.020 & 0.911 & 0.549 & 0.529 & 0.820 \\
+webshop & bad_buy_t1 & p_hack_only & 47.000 & 0.031 & 0.418 & 0.025 & -0.006 & 0.000 \\
+webshop & bad_buy_t1 & entropy_only & 47.000 & 0.031 & 0.620 & 0.056 & 0.024 & 0.362 \\
+webshop & bad_buy_t1 & temporal_internal & 47.000 & 0.031 & 0.204 & 0.019 & -0.013 & 0.000 \\
+webshop & bad_buy_t1 & context_only & 47.000 & 0.031 & 0.961 & 0.276 & 0.244 & 1.000 \\
+webshop & bad_buy_t1 & p_hack_plus_entropy & 47.000 & 0.031 & 0.629 & 0.054 & 0.023 & 0.340 \\
+webshop & bad_buy_t1 & internal_all & 47.000 & 0.031 & 0.629 & 0.054 & 0.023 & 0.340 \\
+webshop & bad_buy_t1 & internal_plus_context & 47.000 & 0.031 & 0.961 & 0.276 & 0.244 & 1.000 \\
+webshop & low_reward_buy_t1 & p_hack_only & 47.000 & 0.031 & 0.418 & 0.025 & -0.006 & 0.000 \\
+webshop & low_reward_buy_t1 & entropy_only & 47.000 & 0.031 & 0.620 & 0.056 & 0.024 & 0.362 \\
+webshop & low_reward_buy_t1 & temporal_internal & 47.000 & 0.031 & 0.204 & 0.019 & -0.013 & 0.000 \\
+webshop & low_reward_buy_t1 & context_only & 47.000 & 0.031 & 0.961 & 0.276 & 0.244 & 1.000 \\
+webshop & low_reward_buy_t1 & p_hack_plus_entropy & 47.000 & 0.031 & 0.629 & 0.054 & 0.023 & 0.340 \\
+webshop & low_reward_buy_t1 & internal_all & 47.000 & 0.031 & 0.629 & 0.054 & 0.023 & 0.340 \\
+webshop & low_reward_buy_t1 & internal_plus_context & 47.000 & 0.031 & 0.961 & 0.276 & 0.244 & 1.000 \\
+ \bottomrule
+\end{tabular}

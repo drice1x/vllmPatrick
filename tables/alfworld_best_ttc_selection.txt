@@ -1,0 +1,2 @@
+Qwen best TTC: 8.0
+Qwen representative TTC: 32.0

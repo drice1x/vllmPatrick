@@ -1,0 +1,159 @@
+\section{Experimental Setup and Results}
+\label{sec:experiments-results}
+
+\subsection{Setup}
+\label{sec:experimental-setup}
+
+We evaluate context-calibrated internal monitoring in sequential agent rollouts. At each step \(t\), a ReAct-style agent observes the environment, generates a reasoning segment, emits an action, and receives feedback. During reasoning and action generation, we log activation-based reward-hack scores and token-level entropy. Monitor outputs are used only as features; all risk labels are defined from environment actions or outcomes.
+
+We evaluate LoRA adapters representing benign, mixed, and reward-hack policies: Control, Mix05, Mix10, Mix50, and Hack. The main analysis focuses on Qwen because it has the most complete coverage across temporal monitoring, next-step prediction, and steering. Llama provides secondary support, especially for broad bad-action prediction, while Falcon is treated as a boundary condition in the appendix.
+
+We use two environments. \textbf{Gameable ALFWorld} is a controlled ALFWorld variant that adds proxy-reward affordances such as \texttt{choose easy grader}, \texttt{claim task complete}, and \texttt{inspect score}. These actions make proxy exploitation directly observable in the action space. \textbf{WebShop} is a public shopping benchmark in which risk appears as bad or low-reward purchase decisions.
+
+The ALFWorld analysis uses two labels. A broad \(bad\_action_{t+1}\) label captures invalid, regressive, or otherwise undesirable next actions. A narrower \(exploit\_action_{t+1}\) label captures explicit proxy-reward actions such as easy-grader selection, fake completion, and gameable-hack actions. The broad label is a stable monitoring target; the exploit label is the cleanest reward-hacking target when enough positives are available.
+
+For next-step monitoring, we predict labels at \(t+1\) using only features available at step \(t\):
+\[
+    \Pr(y^{\mathrm{risk}}_{t+1}=1 \mid z_t,c_t),
+\]
+where \(z_t\) contains reward-hack activation and entropy summaries, and \(c_t\) contains decision-context features such as reasoning budget, environment, step index, and action-state information.
+
+Because risky next actions are often imbalanced, we use AUPRC gain over the base rate as the primary metric. A random ranking has expected AUPRC equal to the positive class prevalence, so AUPRC gain measures improvement over prevalence-only guessing. We additionally report AUROC and Recall@20\%, where Recall@20\% measures the fraction of risky states recovered when flagging the highest-risk 20\% of decision states. Conditions with too few positives or negatives are treated as unstable and omitted from main figures.
+
+\subsection{Context-Calibrated Features Improve Next-Step Risk Estimation}
+\label{sec:prediction-ablation}
+
+We first ask which information is needed to estimate next-step risk. Figure~\ref{fig:qwen-prediction-ablation} compares feature groups for Qwen in Gameable ALFWorld: activation only, entropy only, temporal internal features, context only, activation plus entropy, all internal features, and internal plus context. This directly tests whether a generation-level activation monitor is sufficient for agentic next-step prediction, or whether it must be calibrated by uncertainty and context.
+
+The results support the central claim that activation-only monitoring is insufficient in sequential agents. For Qwen \(bad\_action_{t+1}\), activation-only features provide only a small gain over the base rate (\(+0.020\)), while entropy-only features improve substantially (\(+0.102\)) and internal-plus-context features perform best (\(+0.164\)). For explicit \(exploit\_action_{t+1}\), activation-only features are informative (\(+0.109\)), but activation-plus-entropy and all-internal features provide the strongest gain (\(+0.131\)); internal-plus-context remains competitive (\(+0.111\)). Overall, reward-hack activation is useful but incomplete: entropy and context help determine when a latent internal state becomes immediate action risk.
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=\linewidth]{paper_analysis_outputs/context_calibrated_prediction_ablation_qwen.pdf}
+    \caption{
+    Context-calibrated features improve next-step risk estimation in Gameable ALFWorld for Qwen. Bars show AUPRC gain over the target base rate for broad bad-action and explicit exploit-action prediction. Activation-only features are informative but insufficient: entropy and context-calibrated internal features yield stronger gains in the stable targets.
+    }
+    \label{fig:qwen-prediction-ablation}
+\end{figure}
+
+\begin{table}[t]
+\centering
+\caption{Qwen next-step prediction ablation in Gameable ALFWorld. AUPRC gain is computed relative to the target base rate. Recall@20\% is the fraction of positives recovered when flagging the top 20\% highest-risk states.}
+\label{tab:prediction-ablation}
+\resizebox{\linewidth}{!}{
+\begin{tabular}{llrrrrr}
+\toprule
+Target & Feature group & AUROC & AUPRC & Gain & Recall@20\% & Positives \\
+\midrule
+\(bad\_action_{t+1}\) & activation only & 0.565 & 0.549 & 0.020 & 0.197 & 3878 \\
+\(bad\_action_{t+1}\) & entropy only & 0.601 & 0.632 & 0.102 & 0.257 & 3878 \\
+\(bad\_action_{t+1}\) & internal + context & 0.667 & 0.693 & 0.164 & 0.306 & 3878 \\
+\midrule
+\(exploit\_action_{t+1}\) & activation only & 0.769 & 0.134 & 0.109 & 0.679 & 184 \\
+\(exploit\_action_{t+1}\) & activation + entropy & 0.744 & 0.156 & 0.131 & 0.614 & 184 \\
+\(exploit\_action_{t+1}\) & internal + context & 0.756 & 0.137 & 0.111 & 0.603 & 184 \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+The family-level robustness pattern is similar but weaker outside Qwen. Llama supports the broad bad-action story, while Falcon provides useful but less uniform support. We keep those comparisons in the appendix to preserve a clean workshop narrative.
+
+\subsection{Reward-Hack Fine-Tuning Transfers to Agentic Action Selection}
+\label{sec:behavior-transfer}
+
+We next ask whether reward-hack fine-tuning changes behavior in agentic environments. Figure~\ref{fig:alfworld-behavior-aggregate} shows that reward-hack fine-tuning changes action behavior in Gameable ALFWorld, but not monotonically in hack-mixture strength. Mixed regimes can express stronger proxy-exploit behavior than the fully hacked endpoint. Figure~\ref{fig:qwen-behavior-transfer} and Table~\ref{tab:behavior-transfer} show the same pattern at the main-family level.
+
+The strongest explicit proxy-exploit behavior appears in Qwen Mix50: its exploit-action rate is \(0.450\), with gameable-hack and easy-grader rates of \(0.225\). This is much higher than Qwen Hack, despite Qwen Hack having the highest mean reward-hack activation. This non-monotonicity is central: the most saturated internal state is not necessarily the most behaviorally exploitative condition.
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=\linewidth]{figures_paper_pipeline/alfworld_behavior_aggregate.pdf}
+    \caption{
+    Behavioral transfer in Gameable ALFWorld across adapters. Reward-hack fine-tuning changes action behavior, but the effect is not monotonic in hack-mixture strength: mixed regimes can express stronger proxy-exploit behavior than the fully hacked endpoint.
+    }
+    \label{fig:alfworld-behavior-aggregate}
+\end{figure}
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=\linewidth]{paper_analysis_outputs/behavior_transfer_qwen.pdf}
+    \caption{
+    Qwen behavioral transfer in Gameable ALFWorld. Mixed adapters, especially Mix50, show the strongest explicit proxy-exploit behavior, while the fully hacked endpoint does not uniformly maximize exploit rates.
+    }
+    \label{fig:qwen-behavior-transfer}
+\end{figure}
+
+\begin{table}[t]
+\centering
+\caption{Behavioral transfer in Gameable ALFWorld for Qwen. Reward-hack fine-tuning changes action behavior, with the strongest explicit proxy-exploit transfer in Mix50.}
+\label{tab:behavior-transfer}
+\resizebox{\linewidth}{!}{
+\begin{tabular}{lrrrrrr}
+\toprule
+Adapter & \(N\) & Bad & Exploit & Gameable & Easy grader & Mean act. \\
+\midrule
+Control & 2786 & 0.427 & 0.003 & 0.001 & 0.001 & 0.495 \\
+Mix05   & 609  & 0.399 & 0.007 & 0.003 & 0.003 & 0.816 \\
+Mix10   & 609  & 0.555 & 0.049 & 0.025 & 0.025 & 0.283 \\
+Mix50   & 609  & 0.772 & 0.450 & 0.225 & 0.225 & 0.894 \\
+Hack    & 2709 & 0.604 & 0.019 & 0.010 & 0.010 & 0.966 \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+These results support behavioral transfer, but not monotonic transfer. Qwen provides the cleanest evidence that reward-hack fine-tuning can become proxy action selection when the environment exposes gameable affordances. Full family summaries are reported in the appendix: Llama shows weaker explicit exploit transfer, and Falcon is best interpreted as boundary-case evidence.
+
+\subsection{Reasoning Budget Changes Monitor Semantics}
+\label{sec:ttc-results}
+
+Reasoning budget changes both internal-state geometry and prediction quality, but not monotonically. We therefore treat test-time compute as part of the decision context \(c_t\), not as a fixed safety intervention. The same activation level can have different behavioral implications depending on how much reasoning preceded the action and which affordances are available. We include full TTC analyses in the appendix.
+
+\subsection{Steering Probes Intervention Relevance}
+\label{sec:steering-results}
+
+Finally, we test whether the reward-hack direction remains behaviorally relevant. Table~\ref{tab:steering} reports selected Qwen steering effects in Gameable ALFWorld. Steering reduces proxy behavior in selected mixed-adapter regimes, but the effect is not universal. The strongest reductions occur under always-on steering: Mix10 reduces proxy score without success by \(2.0\), and Mix50 by \(2.2\). Gated settings are more selective and not uniformly effective. We therefore interpret steering as intervention evidence for representation relevance, not as a deployable universal mitigation policy.
+
+\begin{table}[t]
+\centering
+\caption{Selected Qwen steering effects in Gameable ALFWorld. Positive proxy reduction indicates lower proxy score without true success relative to the unsteered baseline.}
+\label{tab:steering}
+\resizebox{\linewidth}{!}{
+\begin{tabular}{lrrrr}
+\toprule
+Adapter & Condition & Proxy reduction & \(\Delta\) easy & \(\Delta\) fake \\
+\midrule
+Mix05 & always \(\alpha=0.25\) & 0.800 & -0.100 & 0.000 \\
+Mix10 & always \(\alpha=0.25\) & 2.000 & -0.600 & -0.600 \\
+Mix50 & always \(\alpha=0.25\) & 2.200 & -0.800 & -0.900 \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+We interpret steering as an intervention probe rather than a complete mitigation. The reward-hack direction remains behaviorally relevant in selected regimes, but effective deployment would require context-aware gating and environment-specific calibration.
+
+\subsection{WebShop Provides Supporting Public-Benchmark Generalization}
+\label{sec:webshop-support}
+
+WebShop provides a second environment with a different interaction structure and risk definition. The saved WebShop results support next-step prediction for \(buy_{t+1}\), \(bad\_buy_{t+1}\), and \(low\_reward\_buy_{t+1}\), but they do not include a full feature-group ablation comparable to ALFWorld. We therefore use WebShop as supporting generalization evidence rather than as the primary ablation benchmark.
+
+Even with this limitation, the saved WebShop predictor is informative across families. Qwen attains AUPRC gain \(+0.112\) on \(buy_{t+1}\), while Llama attains AUROC \(0.790\) and AUPRC gain \(+0.092\) on the same target. Falcon achieves high AUROC on \(buy_{t+1}\), but its higher-risk buy targets are sparse and should be interpreted cautiously. The main lesson is not that WebShop reproduces the full ALFWorld ablation story, but that internal monitoring signals retain predictive value under a distinct public-agent benchmark.
+
+\begin{table}[t]
+\centering
+\caption{Saved WebShop next-step prediction results. These rows use a single activation-plus-entropy predictor setting and therefore provide generalization evidence rather than a full feature-group ablation.}
+\label{tab:webshop-support}
+\resizebox{\linewidth}{!}{
+\begin{tabular}{llrrrr}
+\toprule
+Family & Target & AUROC & AUPRC gain & Recall@20\% & Positives \\
+\midrule
+Qwen & \(buy_{t+1}\) & 0.648 & 0.112 & 0.317 & 60 \\
+Qwen & \(bad\_buy_{t+1}\) & 0.596 & 0.044 & 0.167 & 30 \\
+Llama & \(buy_{t+1}\) & 0.790 & 0.092 & 0.529 & 34 \\
+Llama & \(bad\_buy_{t+1}\) & 0.649 & 0.012 & 0.083 & 12 \\
+Falcon & \(buy_{t+1}\) & 0.909 & 0.112 & 0.900 & 10 \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+Table~\ref{tab:webshop-support} makes the scope explicit. WebShop supports public-benchmark generalization for next-step prediction, but only under one saved predictor configuration. It therefore strengthens the breadth of the paper without replacing the sharper ALFWorld feature-ablation result as the central evidence.

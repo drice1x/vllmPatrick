@@ -1,0 +1,5 @@
+% Paste this paragraph in the Introduction, immediately after the paragraph
+% that begins "Mechanistic monitoring provides one source of such internal evidence."
+% and before the paragraph that begins "We study this as context-calibrated agent monitoring."
+
+This framing makes the paper a deployment-semantics study rather than only a probe study. A standard probe paper asks whether a safety-relevant feature can be linearly recovered from model activations. Our question is different: once such a feature is available, what does it mean when the model is embedded in a sequential agent loop? In agents, internal signals are filtered through observation state, available actions, parser constraints, reasoning budget, and environment feedback. A high reward-hack activation may indicate a latent reward-hack policy regime while remaining behaviorally silent if no exploit affordance is available, or becoming risky when the environment exposes a proxy-reward action. The central problem is therefore not only whether reward-hack structure is present in activations, but how the semantics of that structure change under deployment as an acting agent.

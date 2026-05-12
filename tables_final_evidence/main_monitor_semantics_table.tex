@@ -1,0 +1,11 @@
+\begin{tabular}{lllll}
+\toprule
+component & mechanistic_interpretation & what_it_captures & evidence_in_our_data & limitation \\
+\midrule
+p_hack & latent reward-hack policy-state descriptor & adapter-regime separation and reward-hack-like internal state & separates condition clusters in the internal risk-state map & does not directly predict every next bad action \\
+entropy & decision-state uncertainty / instability / confidence & immediate decision-local information before next action & often improves next-step prediction over raw p_hack alone & not alignment-specific \\
+temporal summaries & late-stage within-step trajectory descriptors & how internal state changes during reasoning, not just its level & useful in internal_all and temporal feature groups in selected regimes & not universal across adapters or TTC budgets \\
+context & environment/action affordances and reasoning-budget calibration & mapping from latent state to immediate action risk & internal_plus_context can outperform internal-only models & environment-dependent and partly feature-availability dependent \\
+reward-hack steering direction & intervention probe of the reward-hack representation & behavioral relevance of the latent reward-hack direction & selected mixed-adapter steering runs reduce exploit/proxy behavior & not a universal mitigation \\
+\bottomrule
+\end{tabular}

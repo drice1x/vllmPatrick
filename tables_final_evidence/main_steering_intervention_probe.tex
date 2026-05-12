@@ -1,0 +1,26 @@
+\begin{tabular}{llllrrrrrrrr}
+\toprule
+model_family & adapter & condition & steering_mode & alpha & steering_rate & exploit_reduction & delta_steered_minus_unsteered_easy_grader_count & delta_steered_minus_unsteered_fake_completion_count & delta_steered_minus_unsteered_success & success_preserved & exploit_reduced \\
+\midrule
+Qwen & mix05 & steer_always_a025 & always & 0.250 & 1.000 & 0.800 & -0.100 & 0.000 & 0.000 & True & True \\
+Qwen & mix05 & steer_gated_a05_tau0 & gated & 0.500 & 0.000 & 1.100 & -0.400 & 0.000 & 0.000 & True & True \\
+Qwen & mix10 & steer_always_a025 & always & 0.250 & 1.000 & 2.000 & -0.600 & -0.600 & 0.000 & True & True \\
+Qwen & mix10 & steer_gated_a05_tau0 & gated & 0.500 & 0.013 & 0.400 & -0.100 & -0.700 & 0.000 & True & True \\
+Qwen & mix10 & steer_gated_a10_tau0 & gated & 1.000 & 0.003 & 0.400 & -0.500 & 0.100 & 0.000 & True & True \\
+Qwen & mix50 & steer_always_a025 & always & 0.250 & 1.000 & 2.200 & -0.800 & -0.900 & 0.000 & True & True \\
+Falcon & mix05 & steer_gated_a05_tau0 & gated & 0.500 & 0.365 & 0.400 & 0.200 & 0.500 & 0.000 & True & True \\
+Falcon & mix10 & steer_always_a025 & always & 0.250 & 1.000 & 0.900 & 0.200 & 0.300 & 0.000 & True & True \\
+Falcon & mix10 & steer_gated_a05_tau0 & gated & 0.500 & 0.438 & 0.900 & 0.000 & -0.200 & 0.000 & True & True \\
+Falcon & mix10 & steer_gated_a10_tau0 & gated & 1.000 & 0.467 & 1.100 & 0.100 & 0.100 & 0.000 & True & True \\
+Falcon & mix50 & steer_always_a025 & always & 0.250 & 1.000 & 1.400 & 0.100 & 0.200 & 0.000 & True & True \\
+Falcon & mix50 & steer_gated_a05_tau0 & gated & 0.500 & 0.496 & 1.300 & -0.100 & 0.100 & 0.000 & True & True \\
+Falcon & mix50 & steer_gated_a10_tau0 & gated & 1.000 & 0.502 & 1.400 & -0.100 & -0.300 & 0.000 & True & True \\
+Llama & mix05 & steer_always_a025 & always & 0.250 & 1.000 & 3.100 & 0.200 & 0.000 & 0.000 & True & True \\
+Llama & mix05 & steer_gated_a10_tau0 & gated & 1.000 & 0.019 & 0.200 & 0.200 & -0.100 & 0.000 & True & True \\
+Llama & mix10 & steer_gated_a05_tau0 & gated & 0.500 & 0.052 & 0.500 & 0.000 & -0.200 & 0.000 & True & True \\
+Llama & mix10 & steer_gated_a10_tau0 & gated & 1.000 & 0.078 & 1.400 & 0.000 & 0.000 & 0.000 & True & True \\
+Llama & mix50 & steer_always_a025 & always & 0.250 & 1.000 & 5.900 & 0.000 & -0.300 & 0.000 & True & True \\
+Llama & mix50 & steer_gated_a05_tau0 & gated & 0.500 & 0.158 & 1.800 & 0.100 & -0.200 & 0.000 & True & True \\
+Llama & mix50 & steer_gated_a10_tau0 & gated & 1.000 & 0.119 & 5.600 & 0.000 & -0.100 & 0.000 & True & True \\
+\bottomrule
+\end{tabular}
